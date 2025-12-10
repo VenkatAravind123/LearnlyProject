@@ -17,7 +17,7 @@ export default function Sidebar() {
       <div className="brand">
         <div className="brand-logo">🎓</div>
         <div className="brand-text">
-          <strong>Learnly</strong>
+          <strong>GenTutor</strong>
           <span className="muted">Personalized Learning</span>
         </div>
       </div>
@@ -34,6 +34,7 @@ export default function Sidebar() {
           </NavLink>
         ))}
       </nav>
+
 
       <div className="sidebar-footer">
         <small className="muted">Tip: Use the search above to find courses</small>

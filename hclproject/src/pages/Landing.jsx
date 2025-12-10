@@ -14,7 +14,7 @@ export default function Landing() {
         <div className="landing-nav-content">
           <div className="landing-brand">
             <span className="landing-logo">🎓</span>
-            <strong>Learnly</strong>
+            <strong>GenTutor</strong>
           </div>
           <div className="landing-nav-links">
             <a href="#features">Features</a>
@@ -58,7 +58,7 @@ export default function Landing() {
       </section>
 
       <section id="features" className="features">
-        <h2 className="section-title">Why Choose Learnly?</h2>
+        <h2 className="section-title">Why Choose GenTutor?</h2>
         <div className="features-grid">
           <div className="feature-card">
             <div className="feature-icon">🎯</div>
@@ -128,7 +128,7 @@ export default function Landing() {
         <div className="footer-content">
           <div className="footer-brand">
             <span className="landing-logo">🎓</span>
-            <strong>Learnly</strong>
+            <strong>GenTutor</strong>
             <p>Empowering learners worldwide</p>
           </div>
           <div className="footer-links">
@@ -153,7 +153,7 @@ export default function Landing() {
           </div>
         </div>
         <div className="footer-bottom">
-          <p>&copy; 2025 Learnly. All rights reserved.</p>
+          <p>&copy; 2025 GenTutor. All rights reserved.</p>
         </div>
       </footer>
     </div>

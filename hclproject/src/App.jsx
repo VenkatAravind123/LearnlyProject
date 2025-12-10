@@ -42,6 +42,7 @@ export default function App() {
         element
       ) : (
         <Navigate to="/competence/instructions" replace />
+        
       )
     ) : (
       <Navigate to="/login" replace />
