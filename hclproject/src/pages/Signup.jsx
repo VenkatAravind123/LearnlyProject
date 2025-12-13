@@ -29,6 +29,7 @@ export default function Signup({ onSuccess }) {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(form),
+        credentials: 'include', // Important for cookies
       });
 
       const data = await response.json();

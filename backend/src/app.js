@@ -20,6 +20,8 @@ app.get("/", (req, res) => {
 });
 
 const userRoutes = require("./routes/userRoutes");
+const profileRoutes = require("./routes/profileRoutes");
+app.use("/api/profile",profileRoutes);
 app.use("/api/users", userRoutes);
 
 sequelize.sync().then(() =>{

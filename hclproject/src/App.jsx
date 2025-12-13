@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./App.css";
 import Sidebar from "./components/Sidebar";
 import Header from "./components/Header";
@@ -15,14 +15,14 @@ import Lesson from "./pages/Lesson";
 import Practice from "./pages/Practice";
 import Progress from "./pages/Progress";
 import Assistant from "./pages/Assistant";
-import { useEffect } from "react";
+import CompleteProfile from "./pages/CompleteProfile"; // <-- Import the new page
 
-function AppLayout({ children, search, setSearch, userRole }) {
+function AppLayout({ children, search, setSearch, userRole,user }) {
   return (
     <div className="app-root">
-      <Sidebar userRole={userRole} />
+      <Sidebar userRole={userRole} user={user}/>
       <div className="main-area">
-        <Header search={search} setSearch={setSearch} />
+        <Header search={search} setSearch={setSearch} user={user}/>
         <main className="content">{children}</main>
       </div>
     </div>
@@ -30,7 +30,7 @@ function AppLayout({ children, search, setSearch, userRole }) {
 }
 
 export default function App() {
-  const [user, setUser] = useState(null); // Will hold { id, name, email, role: 'student' | 'admin' }
+  const [user, setUser] = useState(null); // { id, name, email, role: 'student' | 'admin' }
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const isLoggedIn = !!user;
@@ -49,6 +49,7 @@ export default function App() {
         setUser(null);
         setLoading(false);
       });
+      
   }, []);
 
   const handleLoginSuccess = (userData) => {
@@ -63,7 +64,6 @@ export default function App() {
     setUser(null);
   };
 
-
   const requireAuth = (element, allowedRoles = ['student', 'admin']) =>
     isLoggedIn ? (
       allowedRoles.includes(userRole) ? (
@@ -74,6 +74,8 @@ export default function App() {
     ) : (
       <Navigate to="/login" replace />
     );
+
+  if (loading) return null; // Optionally show a spinner
 
   return (
     <Router>
@@ -96,18 +98,24 @@ export default function App() {
           path="/signup"
           element={
             isLoggedIn ? (
-              <Navigate to="/dashboard" replace />
+              <Navigate to="/complete-profile" replace />
             ) : (
               <Signup onSuccess={handleLoginSuccess} />
             )
           }
         />
 
+        {/* Complete profile after signup */}
+        <Route
+          path="/complete-profile"
+          element={requireAuth(<CompleteProfile />)}
+        />
+
         {/* Protected routes - Role-based dashboard */}
         <Route
           path="/dashboard"
           element={requireAuth(
-            <AppLayout search={search} setSearch={setSearch} userRole={userRole}>
+            <AppLayout search={search} setSearch={setSearch} userRole={userRole} user={user}>
               {userRole === 'admin' ? <AdminDashboard /> : <Dashboard />}
             </AppLayout>
           )}
@@ -117,7 +125,7 @@ export default function App() {
         <Route
           path="/courses"
           element={requireAuth(
-            <AppLayout search={search} setSearch={setSearch} userRole={userRole}>
+            <AppLayout search={search} setSearch={setSearch} userRole={userRole} user={user}>
               <Courses search={search} />
             </AppLayout>,
             ['student', 'admin']
@@ -127,7 +135,7 @@ export default function App() {
         <Route
           path="/learning-path"
           element={requireAuth(
-            <AppLayout search={search} setSearch={setSearch} userRole={userRole}>
+            <AppLayout search={search} setSearch={setSearch} userRole={userRole} user={user}>
               <LearningPath />
             </AppLayout>,
             ['student']
@@ -137,7 +145,7 @@ export default function App() {
         <Route
           path="/lesson/:id"
           element={requireAuth(
-            <AppLayout search={search} setSearch={setSearch} userRole={userRole}>
+            <AppLayout search={search} setSearch={setSearch} userRole={userRole} user={user}>
               <Lesson />
             </AppLayout>,
             ['student']
@@ -147,7 +155,7 @@ export default function App() {
         <Route
           path="/practice"
           element={requireAuth(
-            <AppLayout search={search} setSearch={setSearch} userRole={userRole}>
+            <AppLayout search={search} setSearch={setSearch} userRole={userRole} user={user}>
               <Practice />
             </AppLayout>,
             ['student']
@@ -157,7 +165,7 @@ export default function App() {
         <Route
           path="/progress"
           element={requireAuth(
-            <AppLayout search={search} setSearch={setSearch} userRole={userRole}>
+            <AppLayout search={search} setSearch={setSearch} userRole={userRole}  user={user}>
               <Progress />
             </AppLayout>,
             ['student']
@@ -167,7 +175,7 @@ export default function App() {
         <Route
           path="/assistant"
           element={requireAuth(
-            <AppLayout search={search} setSearch={setSearch} userRole={userRole}>
+            <AppLayout search={search} setSearch={setSearch} userRole={userRole} user={user}>
               <Assistant />
             </AppLayout>,
             ['student']
@@ -177,7 +185,7 @@ export default function App() {
         <Route
           path="/profile"
           element={requireAuth(
-            <AppLayout search={search} setSearch={setSearch} userRole={userRole}>
+            <AppLayout search={search} setSearch={setSearch} userRole={userRole}  user={user}>
               <Profile user={user} onLogout={handleLogout} />
             </AppLayout>
           )}

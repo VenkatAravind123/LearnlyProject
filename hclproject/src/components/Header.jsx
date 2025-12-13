@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-
+import { useLocation } from "react-router-dom";
+import { FaRegUser } from "react-icons/fa";
 const pageTitles = {
   "/dashboard": "Dashboard",
   "/courses": "Courses",
@@ -12,7 +12,7 @@ const pageTitles = {
   "/profile": "Profile",
 };
 
-export default function Header({ search, setSearch }) {
+export default function Header({ search, setSearch,user }) {
  // const navigate = useNavigate();
   const location = useLocation();
   const [showMenu, setShowMenu] = useState(false);
@@ -63,7 +63,7 @@ export default function Header({ search, setSearch }) {
           onClick={() => setShowMenu((v) => !v)}
           style={{ position: "relative" }}
         >
-          Account
+          <FaRegUser /> {user ? user.name : "Account"}
         </button>
         {showMenu && (
           <div

@@ -19,7 +19,7 @@ const adminItems = [
   { id: "profile", label: "Profile", emoji: "👤", path: "/profile" },
 ];
 
-export default function Sidebar({ userRole = 'student' }) {
+export default function Sidebar({ userRole = 'student',user}) {
   const items = userRole === 'admin' ? adminItems : studentItems;
 
   return (
@@ -27,13 +27,17 @@ export default function Sidebar({ userRole = 'student' }) {
       <div className="brand">
         <div className="brand-logo">🎓</div>
         <div className="brand-text">
-          <strong>Learnly</strong>
+          <strong>GenTutor</strong>
           <span className="muted">
             {userRole === 'admin' ? 'Admin Panel' : 'Personalized Learning'}
           </span>
         </div>
       </div>
-
+      {user && (
+        <div className="sidebar-user">
+          <span className="sidebar-user-name">Username : {user.name}</span>
+        </div>
+      )}
       <nav className="nav">
         {items.map((it) => (
           <NavLink

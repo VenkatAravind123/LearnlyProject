@@ -47,13 +47,19 @@ const register = async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: "1d" }
     );
-
+res.cookie("token", token, {
+  httpOnly: true,
+  sameSite: "lax", // or "strict"
+  secure: process.env.NODE_ENV === "production", // true in production, false in dev
+  path: "/",
+  maxAge: 24 * 60 * 60 * 1000 // 1 day
+});
     // Return user data (without password) and token
     res.status(201).json({
       message: "User registered successfully",
       token,
       user: {
-        id: user.id,
+        id: user.userId,
         name: user.name,
         email: user.email,
         role: user.role
@@ -105,7 +111,7 @@ const login = async (req, res) => {
 res.json({
   message: "Login successful",
   user: {
-    id: user.id,
+    id: user.userId,
     name: user.name,
     email: user.email,
     role: user.role
