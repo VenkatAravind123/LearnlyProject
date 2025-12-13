@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 
 const pageTitles = {
@@ -13,10 +13,34 @@ const pageTitles = {
 };
 
 export default function Header({ search, setSearch }) {
-  const navigate = useNavigate();
+ // const navigate = useNavigate();
   const location = useLocation();
+  const [showMenu, setShowMenu] = useState(false);
+  const menuRef = useRef(null);
+
   const base = Object.keys(pageTitles).find((p) => location.pathname.startsWith(p));
   const pageTitle = pageTitles[base] || "Dashboard";
+
+  // Close menu when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setShowMenu(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // Logout handler
+  const handleLogout = async () => {
+    await fetch("http://localhost:5000/api/users/logout", {
+      method: "POST",
+      credentials: "include",
+    });
+    // navigate("/login");
+    window.location.href = "/login";
+  };
 
   return (
     <header className="header">
@@ -25,7 +49,7 @@ export default function Header({ search, setSearch }) {
         <div className="header-sub">Personalized suggestions to meet your goals</div>
       </div>
 
-      <div className="header-right">
+      <div className="header-right" ref={menuRef} style={{ position: "relative" }}>
         <label className="search">
           <input
             value={search}
@@ -34,7 +58,44 @@ export default function Header({ search, setSearch }) {
             aria-label="Search courses"
           />
         </label>
-        <button className="ghost" onClick={() => navigate("/profile")}>Account</button>
+        <button
+          className="ghost"
+          onClick={() => setShowMenu((v) => !v)}
+          style={{ position: "relative" }}
+        >
+          Account
+        </button>
+        {showMenu && (
+          <div
+            style={{
+              position: "absolute",
+              right: 0,
+              top: "2.5rem",
+              background: "#222",
+              borderRadius: "0.5rem",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+              zIndex: 10,
+              minWidth: "120px",
+              padding: "0.5rem 0"
+            }}
+          >
+            <button
+              className="ghost"
+              style={{
+                width: "100%",
+                textAlign: "left",
+                padding: "0.5rem 1rem",
+                border: "none",
+                background: "none",
+                color: "#fff",
+                cursor: "pointer"
+              }}
+              onClick={handleLogout}
+            >
+              Logout
+            </button>
+          </div>
+        )}
       </div>
     </header>
   );

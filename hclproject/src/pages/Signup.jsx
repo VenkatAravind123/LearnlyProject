@@ -7,19 +7,50 @@ export default function Signup({ onSuccess }) {
     name: "",
     email: "",
     password: "",
-    track: "frontend",
-    updates: true,
+    role: "student",
   });
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setForm((prev) => ({ ...prev, [name]: type === "checkbox" ? checked : value }));
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onSuccess?.();
-    navigate("/competence/instructions");
+    setError("");
+    setLoading(true);
+
+    try {
+      const response = await fetch('http://localhost:5000/api/users/register', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(form),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Registration failed');
+      }
+
+      // Store token
+      localStorage.setItem('token', data.token);
+      
+      // Call success handler with user data
+      onSuccess(data.user);
+      
+      // Navigate to dashboard
+      navigate("/dashboard");
+    } catch (err) {
+      setError(err.message || 'Signup failed. Please try again.');
+      console.error('Signup error:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -30,47 +61,97 @@ export default function Signup({ onSuccess }) {
           <div className="auth-copy">
             <p className="pill">Start free</p>
             <h1>Craft your learning path</h1>
-            <p>Tell us what you want to achieve and we’ll tailor a roadmap for you.</p>
-            <div className="chips">
-              <span>Web</span><span>AI/ML</span><span>Data</span><span>Cloud</span>
-            </div>
+            <p>Tell us what you want to achieve and we'll tailor a roadmap for you.</p>
           </div>
         </div>
 
         <div className="auth-card">
           <div className="auth-header">
             <h2>Sign up</h2>
-            <p>14-day Pro trial included</p>
+            <p>Create your account</p>
           </div>
 
           <form className="auth-form" onSubmit={handleSubmit}>
-            <label>Full name
-              <input name="name" value={form.name} onChange={handleChange} placeholder="Jordan Learner" required />
+            {error && (
+              <div style={{ 
+                color: '#ff6b6b', 
+                background: 'rgba(255,107,107,0.1)', 
+                padding: '0.75rem', 
+                borderRadius: '8px',
+                marginBottom: '1rem',
+                fontSize: '0.9rem'
+              }}>
+                {error}
+              </div>
+            )}
+            
+            <label>
+              Full name
+              <input 
+                name="name" 
+                value={form.name} 
+                onChange={handleChange} 
+                placeholder="Jordan Learner" 
+                required 
+                disabled={loading}
+              />
             </label>
-            <label>Email
-              <input name="email" type="email" value={form.email} onChange={handleChange} placeholder="you@example.com" required />
+            
+            <label>
+              Email
+              <input 
+                name="email" 
+                type="email" 
+                value={form.email} 
+                onChange={handleChange} 
+                placeholder="you@example.com" 
+                required 
+                disabled={loading}
+              />
             </label>
-            <label>Password
-              <input name="password" type="password" value={form.password} onChange={handleChange} placeholder="Create a strong password" required />
+            
+            <label>
+              Password
+              <input 
+                name="password" 
+                type="password" 
+                value={form.password} 
+                onChange={handleChange} 
+                placeholder="At least 6 characters" 
+                required 
+                minLength={6}
+                disabled={loading}
+              />
             </label>
-            <label>Preferred track
-              <select name="track" value={form.track} onChange={handleChange}>
-                <option value="frontend">Frontend</option>
-                <option value="backend">Backend</option>
-                <option value="ai">AI / ML</option>
-                <option value="data">Data</option>
-                <option value="cloud">Cloud</option>
+            
+            <label>
+              I am a
+              <select 
+                name="role" 
+                value={form.role} 
+                onChange={handleChange}
+                disabled={loading}
+              >
+                <option value="student">Student</option>
+                <option value="admin">Administrator</option>
               </select>
             </label>
-            <label className="checkbox">
-              <input type="checkbox" name="updates" checked={form.updates} onChange={handleChange} />
-              Email me product updates and tips
-            </label>
-            <button className="btn-primary full" type="submit">Create account</button>
+
+            <button 
+              className="btn-primary full" 
+              type="submit" 
+              disabled={loading}
+              style={{ opacity: loading ? 0.6 : 1 }}
+            >
+              {loading ? 'Creating account...' : 'Create account'}
+            </button>
+
             <div className="auth-divider"><span>or</span></div>
+            
             <div className="auth-social">
-              <button type="button" className="btn-ghost">Sign up with Google</button>
-              <button type="button" className="btn-ghost">Sign up with GitHub</button>
+              <button type="button" className="btn-ghost" disabled={loading}>
+                Sign up with Google
+              </button>
             </div>
           </form>
 

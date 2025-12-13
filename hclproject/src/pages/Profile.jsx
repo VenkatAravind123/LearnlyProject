@@ -1,35 +1,37 @@
 import React from "react";
 
-export default function Profile() {
+export default function Profile({ user, onLogout }) {
   return (
     <section>
       <div className="profile-header">
         <div className="avatar">👩‍🎓</div>
         <div>
-          <h3>Jordan Learner</h3>
-          <div className="muted">Member since 2024 • Learning: React Basics</div>
+          <h3>{user?.name || 'User'}</h3>
+          <div className="muted">
+            {user?.email} • {user?.role === 'admin' ? 'Administrator' : 'Student'}
+          </div>
         </div>
       </div>
 
       <div className="card">
-        <h4>Account</h4>
+        <h4>Account Details</h4>
         <div className="profile-grid">
           <div>
             <div className="muted small">Email</div>
-            <div>jordan.learner@example.com</div>
+            <div>{user?.email || 'user@example.com'}</div>
           </div>
           <div>
-            <div className="muted small">Subscription</div>
-            <div>Free</div>
+            <div className="muted small">Role</div>
+            <div>{user?.role === 'admin' ? 'Administrator' : 'Student'}</div>
           </div>
           <div>
-            <div className="muted small">Timezone</div>
-            <div>UTC−05:00</div>
+            <div className="muted small">Member Since</div>
+            <div>2024</div>
           </div>
         </div>
         <div className="actions" style={{ marginTop: 16 }}>
-          <button>Manage Subscription</button>
           <button className="ghost">Edit Profile</button>
+          <button className="ghost" onClick={onLogout}>Logout</button>
         </div>
       </div>
     </section>

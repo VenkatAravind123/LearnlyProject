@@ -4,25 +4,23 @@ import "./App.css";
 import Sidebar from "./components/Sidebar";
 import Header from "./components/Header";
 import Dashboard from "./pages/Dashboard";
+import AdminDashboard from "./pages/AdminDashboard";
 import Courses from "./pages/Courses";
 import LearningPath from "./pages/LearningPath";
 import Profile from "./pages/Profile";
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
-import CompetenceIntro from "./pages/CompetenceIntro";
-import CompetenceTest from "./pages/CompetenceTest";
-import CompetenceEvaluating from "./pages/CompetenceEvaluating";
-import CompetenceResult from "./pages/CompetenceResult";
 import Lesson from "./pages/Lesson";
 import Practice from "./pages/Practice";
 import Progress from "./pages/Progress";
 import Assistant from "./pages/Assistant";
+import { useEffect } from "react";
 
-function AppLayout({ children, search, setSearch }) {
+function AppLayout({ children, search, setSearch, userRole }) {
   return (
     <div className="app-root">
-      <Sidebar />
+      <Sidebar userRole={userRole} />
       <div className="main-area">
         <Header search={search} setSearch={setSearch} />
         <main className="content">{children}</main>
@@ -32,17 +30,46 @@ function AppLayout({ children, search, setSearch }) {
 }
 
 export default function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [hasCompletedCompetence, setHasCompletedCompetence] = useState(false);
+  const [user, setUser] = useState(null); // Will hold { id, name, email, role: 'student' | 'admin' }
   const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(true);
+  const isLoggedIn = !!user;
+  const userRole = user?.role || 'student';
 
-  const requireAuth = (element) =>
+  useEffect(() => {
+    fetch("http://localhost:5000/api/users/protected", {
+      credentials: "include",
+    })
+      .then(res => res.ok ? res.json() : Promise.reject())
+      .then(data => {
+        if (data && data.user) setUser(data.user);
+        setLoading(false);
+      })
+      .catch(() => {
+        setUser(null);
+        setLoading(false);
+      });
+  }, []);
+
+  const handleLoginSuccess = (userData) => {
+    setUser(userData);
+  };
+
+  const handleLogout = async () => {
+    await fetch("http://localhost:5000/api/users/logout", {
+      method: "POST",
+      credentials: "include",
+    });
+    setUser(null);
+  };
+
+
+  const requireAuth = (element, allowedRoles = ['student', 'admin']) =>
     isLoggedIn ? (
-      hasCompletedCompetence ? (
+      allowedRoles.includes(userRole) ? (
         element
       ) : (
-        <Navigate to="/competence/instructions" replace />
-        
+        <Navigate to="/dashboard" replace />
       )
     ) : (
       <Navigate to="/login" replace />
@@ -51,144 +78,107 @@ export default function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Landing />} />
+        {/* Public routes */}
+        <Route path="/" element={isLoggedIn ? <Navigate to="/dashboard" replace /> : <Landing />} />
+        
         <Route
           path="/login"
           element={
             isLoggedIn ? (
               <Navigate to="/dashboard" replace />
             ) : (
-              <Login
-                onSuccess={() => {
-                  setIsLoggedIn(true);
-                  setHasCompletedCompetence(false);
-                }}
-              />
+              <Login onSuccess={handleLoginSuccess} />
             )
           }
         />
+        
         <Route
           path="/signup"
           element={
             isLoggedIn ? (
               <Navigate to="/dashboard" replace />
             ) : (
-              <Signup
-                onSuccess={() => {
-                  setIsLoggedIn(true);
-                  setHasCompletedCompetence(false);
-                }}
-              />
+              <Signup onSuccess={handleLoginSuccess} />
             )
           }
         />
 
-        {/* Competence flow */}
-        <Route
-          path="/competence/instructions"
-          element={
-            isLoggedIn ? (
-              <CompetenceIntro />
-            ) : (
-              <Navigate to="/login" replace />
-            )
-          }
-        />
-        <Route
-          path="/competence/test"
-          element={
-            isLoggedIn ? (
-              <CompetenceTest />
-            ) : (
-              <Navigate to="/login" replace />
-            )
-          }
-        />
-        <Route
-          path="/competence/evaluating"
-          element={
-            isLoggedIn ? (
-              <CompetenceEvaluating />
-            ) : (
-              <Navigate to="/login" replace />
-            )
-          }
-        />
-        <Route
-          path="/competence/result"
-          element={
-            isLoggedIn ? (
-              <CompetenceResult
-                onComplete={() => setHasCompletedCompetence(true)}
-              />
-            ) : (
-              <Navigate to="/login" replace />
-            )
-          }
-        />
-
-        {/* Protected app */}
+        {/* Protected routes - Role-based dashboard */}
         <Route
           path="/dashboard"
           element={requireAuth(
-            <AppLayout search={search} setSearch={setSearch}>
-              <Dashboard />
+            <AppLayout search={search} setSearch={setSearch} userRole={userRole}>
+              {userRole === 'admin' ? <AdminDashboard /> : <Dashboard />}
             </AppLayout>
           )}
         />
+
+        {/* Student routes */}
         <Route
           path="/courses"
           element={requireAuth(
-            <AppLayout search={search} setSearch={setSearch}>
+            <AppLayout search={search} setSearch={setSearch} userRole={userRole}>
               <Courses search={search} />
-            </AppLayout>
+            </AppLayout>,
+            ['student', 'admin']
           )}
         />
+        
         <Route
           path="/learning-path"
           element={requireAuth(
-            <AppLayout search={search} setSearch={setSearch}>
+            <AppLayout search={search} setSearch={setSearch} userRole={userRole}>
               <LearningPath />
-            </AppLayout>
+            </AppLayout>,
+            ['student']
           )}
         />
+        
         <Route
           path="/lesson/:id"
           element={requireAuth(
-            <AppLayout search={search} setSearch={setSearch}>
+            <AppLayout search={search} setSearch={setSearch} userRole={userRole}>
               <Lesson />
-            </AppLayout>
+            </AppLayout>,
+            ['student']
           )}
         />
+        
         <Route
           path="/practice"
           element={requireAuth(
-            <AppLayout search={search} setSearch={setSearch}>
+            <AppLayout search={search} setSearch={setSearch} userRole={userRole}>
               <Practice />
-            </AppLayout>
+            </AppLayout>,
+            ['student']
           )}
         />
+        
         <Route
           path="/progress"
           element={requireAuth(
-            <AppLayout search={search} setSearch={setSearch}>
+            <AppLayout search={search} setSearch={setSearch} userRole={userRole}>
               <Progress />
-            </AppLayout>
+            </AppLayout>,
+            ['student']
           )}
         />
+        
         <Route
           path="/assistant"
           element={requireAuth(
-            <AppLayout search={search} setSearch={setSearch}>
+            <AppLayout search={search} setSearch={setSearch} userRole={userRole}>
               <Assistant />
-            </AppLayout>
+            </AppLayout>,
+            ['student']
           )}
         />
+        
         <Route
           path="/profile"
           element={requireAuth(
-            <AppLayout search={search} setSearch={setSearch}>
-              <Profile />
+            <AppLayout search={search} setSearch={setSearch} userRole={userRole}>
+              <Profile user={user} onLogout={handleLogout} />
             </AppLayout>
           )}
         />

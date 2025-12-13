@@ -1,4 +1,5 @@
 import React from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 const progress = [
@@ -9,7 +10,15 @@ const progress = [
 
 export default function Dashboard() {
   const navigate = useNavigate();
-
+  useEffect(() => {
+    fetch("http://localhost:5000/api/users/protected", {
+      credentials: "include",
+    })
+      .then(res => {
+        if (!res.ok) navigate("/login");
+      });
+  }, [navigate]);
+  
   return (
     <section>
       <div className="welcome">

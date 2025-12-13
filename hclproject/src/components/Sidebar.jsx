@@ -1,7 +1,7 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
 
-const items = [
+const studentItems = [
   { id: "dashboard", label: "Dashboard", emoji: "🏠", path: "/dashboard" },
   { id: "learning-path", label: "Learning Path", emoji: "🛤️", path: "/learning-path" },
   { id: "courses", label: "Courses", emoji: "📚", path: "/courses" },
@@ -11,14 +11,26 @@ const items = [
   { id: "profile", label: "Profile", emoji: "👤", path: "/profile" },
 ];
 
-export default function Sidebar() {
+const adminItems = [
+  { id: "dashboard", label: "Dashboard", emoji: "🏠", path: "/dashboard" },
+  { id: "courses", label: "Manage Courses", emoji: "📚", path: "/courses" },
+  { id: "users", label: "Users", emoji: "👥", path: "/users" },
+  { id: "analytics", label: "Analytics", emoji: "📊", path: "/analytics" },
+  { id: "profile", label: "Profile", emoji: "👤", path: "/profile" },
+];
+
+export default function Sidebar({ userRole = 'student' }) {
+  const items = userRole === 'admin' ? adminItems : studentItems;
+
   return (
     <aside className="sidebar">
       <div className="brand">
         <div className="brand-logo">🎓</div>
         <div className="brand-text">
-          <strong>GenTutor</strong>
-          <span className="muted">Personalized Learning</span>
+          <strong>Learnly</strong>
+          <span className="muted">
+            {userRole === 'admin' ? 'Admin Panel' : 'Personalized Learning'}
+          </span>
         </div>
       </div>
 
@@ -35,9 +47,10 @@ export default function Sidebar() {
         ))}
       </nav>
 
-
       <div className="sidebar-footer">
-        <small className="muted">Tip: Use the search above to find courses</small>
+        <small className="muted">
+          {userRole === 'admin' ? 'Managing the platform' : 'Tip: Use search to find courses'}
+        </small>
       </div>
     </aside>
   );
