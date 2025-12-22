@@ -16,6 +16,7 @@ import Practice from "./pages/Practice";
 import Progress from "./pages/Progress";
 import Assistant from "./pages/Assistant";
 import CompleteProfile from "./pages/CompleteProfile"; // <-- Import the new page
+import CompetenceTest from "./pages/CompetenceTest";
 
 function AppLayout({ children, search, setSearch, userRole,user }) {
   return (
@@ -116,7 +117,7 @@ export default function App() {
           path="/dashboard"
           element={requireAuth(
             <AppLayout search={search} setSearch={setSearch} userRole={userRole} user={user}>
-              {userRole === 'admin' ? <AdminDashboard /> : <Dashboard />}
+              {userRole === 'admin' ? <AdminDashboard user={user}/> : <Dashboard user={user}/>}
             </AppLayout>
           )}
         />
@@ -190,6 +191,8 @@ export default function App() {
             </AppLayout>
           )}
         />
+        <Route path="/competence-test" element={requireAuth(<CompetenceTest />)}
+/>
 
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
