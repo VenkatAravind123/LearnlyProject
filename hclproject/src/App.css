@@ -1026,3 +1026,17 @@
   .test-actions { flex-direction: column; align-items: stretch; }
   .chat-input { flex-direction: column; }
 }
+
+/* Add to your main CSS */
+.competence-test-container, .competence-result {
+  max-width: 600px;
+  margin: 2rem auto;
+  background: #23234a;
+  border-radius: 1rem;
+  padding: 2rem;
+  color: #f3f3fa;
+  box-shadow: 0 4px 24px 0 rgba(0,0,0,0.18);
+}
+.competence-question {
+  margin-bottom: 1.5rem;
+}

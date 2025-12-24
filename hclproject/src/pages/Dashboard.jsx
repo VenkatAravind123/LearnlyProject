@@ -8,7 +8,7 @@ const progress = [
   { title: "Algorithms", pct: 18 },
 ];
 
-export default function Dashboard() {
+export default function Dashboard({ user }) {
   const navigate = useNavigate();
   useEffect(() => {
     fetch("http://localhost:5000/api/users/protected", {
@@ -22,7 +22,7 @@ export default function Dashboard() {
   return (
     <section>
       <div className="welcome">
-        <h1>Welcome back, Learner 👋</h1>
+        <h1>Welcome back, {user.name} 👋</h1>
         <p className="muted">Here are your suggested next steps and progress.</p>
       </div>
 

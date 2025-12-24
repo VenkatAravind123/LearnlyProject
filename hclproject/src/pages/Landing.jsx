@@ -5,6 +5,7 @@ export default function Landing() {
   const navigate = useNavigate();
   const handleGetStarted = () => navigate("/signup");
   const handleSignIn = () => navigate("/login");
+  const handleRegister = () => navigate("/signup");
 
   
 
@@ -20,6 +21,7 @@ export default function Landing() {
             <a href="#features">Features</a>
             <a href="#how-it-works">How it Works</a>
             <button className="btn-outline" onClick={handleSignIn}>Login</button>
+            <button className="btn-outline" onClick={handleRegister}>Register</button>
           </div>
         </div>
       </nav>

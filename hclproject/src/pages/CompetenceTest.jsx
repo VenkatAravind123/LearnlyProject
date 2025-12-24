@@ -1,69 +1,109 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const sampleQuestions = [
-  { id: 1, text: "Which time complexity is faster?", options: ["O(n)", "O(n log n)", "O(1)", "O(n^2)"] },
-  { id: 2, text: "React state is best described as:", options: ["Immutable data", "DOM nodes", "CSS styles", "Server cache"] },
-  { id: 3, text: "Which is a stable sorting algorithm?", options: ["Quick sort", "Merge sort", "Heap sort", "Selection sort"] },
-];
-
 export default function CompetenceTest() {
-  const navigate = useNavigate();
-  const [current, setCurrent] = useState(0);
+  const [questions, setQuestions] = useState([]);
   const [answers, setAnswers] = useState({});
-  const total = sampleQuestions.length;
-  const q = sampleQuestions[current];
-  const allAnswered = Object.keys(answers).length === total;
+  const [submitted, setSubmitted] = useState(false);
+  const [result, setResult] = useState(null);
+  const [timeLeft, setTimeLeft] = useState(60); // 60 seconds for the test
+  const navigate = useNavigate();
 
-  const setAnswer = (id, option) => setAnswers((prev) => ({ ...prev, [id]: option }));
+  useEffect(() => {
+    fetch("http://localhost:5000/api/competence/test", {
+      credentials: "include",
+    })
+      .then((res) => res.json())
+      .then((data) => setQuestions(data.questions || []));
+  }, []);
 
-  const handleSubmit = () => {
-    if (!allAnswered) return;
-    navigate("/competence/evaluating");
+  // Timer logic
+  useEffect(() => {
+    if (submitted) return;
+    if (timeLeft === 0) {
+      handleSubmit();
+      return;
+    }
+    const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line
+  }, [timeLeft, submitted]);
+
+  const handleChange = (qid, value) => {
+    setAnswers((prev) => ({ ...prev, [qid]: value }));
   };
 
-  return (
-    <div className="competence-page">
-      <div className="test-shell">
-        <div className="test-top">
-          <span className="pill">Question {current + 1} / {total}</span>
-          <div className="test-progress">
-            <div className="test-progress-fill" style={{ width: `${((current + 1) / total) * 100}%` }} />
-          </div>
-        </div>
+  const handleSubmit = async (e) => {
+    if (e) e.preventDefault();
+    if (submitted) return;
+    setSubmitted(true);
+    const payload = {
+      subject: "General",
+      answers: Object.entries(answers).map(([questionId, selectedOption]) => ({
+        questionId,
+        selectedOption,
+      })),
+    };
+    const res = await fetch("http://localhost:5000/api/competence/submit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify(payload),
+    });
+    const data = await res.json();
+    setResult(data);
+  };
 
-        <div className="test-question">
-          <h2>{q.text}</h2>
-          <div className="test-options">
-            {q.options.map((opt) => (
-              <label key={opt} className={`option ${answers[q.id] === opt ? "selected" : ""}`}>
+  if (submitted && result) {
+    return (
+      <div className="competence-result">
+        <h2>Competence Test Result</h2>
+        <p><b>Score:</b> {result.competenceScore?.toFixed(2) ?? "--"}%</p>
+        <p><b>Level:</b> {result.competenceLevel}</p>
+        <p><b>Confidence:</b> {(result.confidenceScore * 100).toFixed(1)}%</p>
+        <button className="btn-primary" onClick={() => navigate("/profile")}>Back to Profile</button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="competence-test-container">
+      <h2>Competence Test</h2>
+      <div style={{ fontWeight: "bold", color: "#ff6b6b", marginBottom: "1rem" }}>
+        Time Left: {timeLeft}s
+      </div>
+      <form onSubmit={handleSubmit}>
+        {questions.length === 0 && <div>Loading questions...</div>}
+        {questions.map((q, idx) => (
+          <div key={q.id} className="competence-question">
+            <div>
+              <b>Q{idx + 1}:</b> {q.questionText}
+            </div>
+            {q.options.map((opt, i) => (
+              <label key={i} style={{ display: "block", marginLeft: "1rem" }}>
                 <input
                   type="radio"
-                  name={`q-${q.id}`}
+                  name={q.id}
+                  value={opt}
                   checked={answers[q.id] === opt}
-                  onChange={() => setAnswer(q.id, opt)}
+                  onChange={() => handleChange(q.id, opt)}
+                  required
+                  disabled={submitted}
                 />
                 {opt}
               </label>
             ))}
           </div>
-        </div>
-
-        <div className="test-actions">
-          <button className="ghost" disabled={current === 0} onClick={() => setCurrent((c) => Math.max(0, c - 1))}>
-            Previous
+        ))}
+        {questions.length > 0 && !submitted && (
+          <button className="btn-primary"
+  type="submit"
+  style={{ marginTop: "1.5rem" }}
+  disabled={Object.keys(answers).length !== questions.length}>
+            Submit Test
           </button>
-          {current < total - 1 ? (
-            <button className="btn-primary" onClick={() => setCurrent((c) => Math.min(total - 1, c + 1))}>
-              Next
-            </button>
-          ) : (
-            <button className="btn-primary" disabled={!allAnswered} onClick={handleSubmit}>
-              Submit Assessment
-            </button>
-          )}
-        </div>
-      </div>
+        )}
+      </form>
     </div>
   );
 }

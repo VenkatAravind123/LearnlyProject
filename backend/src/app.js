@@ -3,6 +3,12 @@ const express = require("express");
 const cors = require("cors");
 const sequelize = require("./config/db")
 const cookieParser = require("cookie-parser");
+require("./models/User");
+require("./models/CompetenceTest");
+require("./models/CompetenceQuestion");
+require("./models/StudentCompetence");
+
+
 
 const app = express();
 app.use(express.json());
@@ -21,11 +27,14 @@ app.get("/", (req, res) => {
 
 const userRoutes = require("./routes/userRoutes");
 const profileRoutes = require("./routes/profileRoutes");
+const competenceRoutes = require("./routes/competenceRoutes");
 app.use("/api/profile",profileRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/competence", competenceRoutes);
 
-sequelize.sync().then(() =>{
+sequelize.sync({alter:false}).then(() =>{
     console.log("Database connected and synchronized.");
+    console.log("All Models are synchronized.");
 })
 
 app.listen(process.env.PORT || 5000, () => {
