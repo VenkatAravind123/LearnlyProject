@@ -9,13 +9,14 @@ export default function Profile({ user }) {
   const navigate = useNavigate();
 
   useEffect(() => {
+    console.log(user)
     fetch("http://localhost:5000/api/profile/me", {
       credentials: "include",
+
+    }).then((res) => {
+      if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+      return res.json();
     })
-      .then((res) => {
-        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-        return res.json();
-      })
       .then((data) => {
         setProfile(data);
         setLoading(false);
@@ -24,46 +25,75 @@ export default function Profile({ user }) {
         console.error("Profile fetch error:", err);
         setError(err.message);
         setLoading(false);
+
       });
   }, []);
 
   return (
-    <div className="profile-container">
-      <div className="profile-card">
-        <h2 className="profile-title">👤 Profile</h2>
-        {user && (
-          <div className="profile-section">
-            <div><b>Name:</b> {user.name}</div>
-            <div><b>Email:</b> {user.email}</div>
-            <div><b>Role:</b> {user.role}</div>
-          </div>
-        )}
-        <hr className="profile-divider" />
-        <h3 className="profile-subtitle">🎯 Learning Preferences</h3>
-        {loading ? (
-          <div className="profile-loading">Loading profile...</div>
-        ) : error ? (
-          <div className="profile-loading" style={{ color: "#ff6b6b" }}>Error: {error}</div>
-        ) : profile ? (
-          <div className="profile-section">
-            <div><b>Current Level:</b> {profile.currentLevel}</div>
-            <div><b>Preferred Language:</b> {profile.preferredLanguage}</div>
-            <div><b>Learning Style:</b> {profile.learningStyle}</div>
-            <div>
-              <b>Competence Score:</b> <span className="profile-score">{profile.lastCompetencyScore}</span>
-            </div>
-            <button
-              className="btn-primary"
-              style={{ marginTop: "1.5rem", width: "100%" }}
-              onClick={() => navigate("/competence-test")}
-            >
-              Take Competence Test
-            </button>
-          </div>
-        ) : (
-          <div className="profile-loading">No profile data found</div>
-        )}
+    <section>
+      <div className="welcome">
+        <h1>Profile 👤</h1>
+        <p className="muted">Manage your personal information and learning preferences.</p>
       </div>
-    </div>
+
+      <div className="profile-grid-layout">
+        <div className="card profile-info-card">
+          <div className="profile-header-internal">
+            <div className="avatar-large">{user?.name?.charAt(0) || "U"}</div>
+            <div>
+              <h3>{user?.name || "User"}</h3>
+              <p className="muted">{user?.email}</p>
+              <div className="role-badge">{user?.role || "Student"}</div>
+            </div>
+          </div>
+        </div>
+
+        <div className="card profile-stats-card">
+          <h3>Learning Stats</h3>
+          {loading ? (
+            <div className="profile-loading">Loading stats...</div>
+          ) : error ? (
+            <div className="error-text">Failed to load stats</div>
+          ) : (
+            <div className="stats-row">
+              <div className="stat-item">
+                <span className="stat-val">{profile?.lastCompetencyScore || 0}</span>
+                <span className="stat-label">Competence Score</span>
+              </div>
+              <div className="stat-item">
+                <span className="stat-val">{profile?.currentLevel || "Beginner"}</span>
+                <span className="stat-label">Current Level</span>
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className="card profile-preferences-card">
+          <h3>Preferences</h3>
+          {loading ? (
+            <div>Loading...</div>
+          ) : profile ? (
+            <div className="pref-list">
+              <div className="pref-item">
+                <span>Preferred Language</span>
+                <strong>{profile.preferredLanguage}</strong>
+              </div>
+              <div className="pref-item">
+                <span>Learning Style</span>
+                <strong>{profile.learningStyle}</strong>
+              </div>
+            </div>
+          ) : null}
+
+          <button
+            className="btn-primary"
+            style={{ marginTop: "1.5rem", width: "100%" }}
+            onClick={() => navigate("/competence-test")}
+          >
+            Re-take Competence Test
+          </button>
+        </div>
+      </div>
+    </section>
   );
 }

@@ -28,9 +28,12 @@ app.get("/", (req, res) => {
 const userRoutes = require("./routes/userRoutes");
 const profileRoutes = require("./routes/profileRoutes");
 const competenceRoutes = require("./routes/competenceRoutes");
+const adminCompRoutes = require("./routes/adminCompRoutes");
 app.use("/api/profile",profileRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/competence", competenceRoutes);
+app.use("/api/admin/competence", adminCompRoutes);
+
 
 sequelize.sync({alter:false}).then(() =>{
     console.log("Database connected and synchronized.");

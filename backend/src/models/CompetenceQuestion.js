@@ -5,10 +5,21 @@ const CompetenceTest = require("./CompetenceTest");
 const CompetenceQuestion = sequelize.define(
   "CompetenceQuestion",
   {
+    subject: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+
+    topic: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+
     questionText: {
       type: DataTypes.TEXT,
       allowNull: false
     },
+
     optionA: {
       type: DataTypes.STRING,
       allowNull: false
@@ -25,13 +36,40 @@ const CompetenceQuestion = sequelize.define(
       type: DataTypes.STRING,
       allowNull: false
     },
+
     correctOption: {
       type: DataTypes.ENUM("A", "B", "C", "D"),
       allowNull: false
     },
+
     difficulty: {
       type: DataTypes.ENUM("easy", "medium", "hard"),
       allowNull: false
+    },
+
+    explanation: {
+      type: DataTypes.TEXT,
+      allowNull: true
+    },
+
+    source: {
+      type: DataTypes.ENUM("MANUAL", "AI"),
+      defaultValue: "MANUAL"
+    },
+
+    generatedBy: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+
+    isActive: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true
+    },
+
+    usageCount: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0
     }
   },
   {

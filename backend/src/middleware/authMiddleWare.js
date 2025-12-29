@@ -12,5 +12,12 @@ function authMiddleware(req, res, next) {
     return res.status(401).json({ message: "Invalid token" });
   }
 }
-
-module.exports = authMiddleware;
+function requireRole(role) {
+  return (req, res, next) => {
+    if (!req.user || req.user.role !== role) {
+      return res.status(403).json({ message: `Forbidden: ${role} access required` });
+    }
+    next();
+  };
+}
+module.exports = { authMiddleware, requireRole };
