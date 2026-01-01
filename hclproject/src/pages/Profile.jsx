@@ -31,10 +31,10 @@ export default function Profile({ user }) {
 
   return (
     <section>
-      <div className="welcome">
+      {/* <div className="welcome">
         <h1>Profile 👤</h1>
         <p className="muted">Manage your personal information and learning preferences.</p>
-      </div>
+      </div> */}
 
       <div className="profile-grid-layout">
         <div className="card profile-info-card">

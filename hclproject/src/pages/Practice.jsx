@@ -13,10 +13,10 @@ export default function Practice() {
 
   return (
     <section>
-      <div className="section-header">
+      {/* <div className="section-header">
         <h3>Practice / Quiz</h3>
         <p className="muted">Instant feedback with AI hints</p>
-      </div>
+      </div> */}
 
       <div className="practice-list">
         {questions.map((q) => (

@@ -17,6 +17,7 @@ import Progress from "./pages/Progress";
 import Assistant from "./pages/Assistant";
 import CompleteProfile from "./pages/CompleteProfile"; // <-- Import the new page
 import CompetenceTest from "./pages/CompetenceTest";
+import CourseLearn from "./pages/CourseLearn";
 
 function AppLayout({ children, search, setSearch, userRole,user }) {
   return (
@@ -127,11 +128,20 @@ export default function App() {
           path="/courses"
           element={requireAuth(
             <AppLayout search={search} setSearch={setSearch} userRole={userRole} user={user}>
-              <Courses search={search} />
+              <Courses search={search} userRole={userRole}/>
             </AppLayout>,
             ['student', 'admin']
           )}
         />
+        <Route
+          path="/courses/:courseId"
+          element={requireAuth(
+            <AppLayout search={search} setSearch={setSearch} userRole={userRole} user={user}>
+              <CourseLearn />
+            </AppLayout>,
+            ['student', 'admin']
+          )}
+         />
         
         <Route
           path="/learning-path"

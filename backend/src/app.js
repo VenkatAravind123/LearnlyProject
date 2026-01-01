@@ -6,8 +6,14 @@ const cookieParser = require("cookie-parser");
 require("./models/User");
 require("./models/CompetenceTest");
 require("./models/CompetenceQuestion");
+require("./models/StudentProfile");
 require("./models/StudentCompetence");
-
+//Course models
+require("./models/Course")
+require("./models/CourseUnit")
+require("./models/CourseEnrollment")
+require("./models/CourseUnitQuizQuestion")
+require("./models/CourseUnitQuizAttempt")
 
 
 const app = express();
@@ -29,13 +35,15 @@ const userRoutes = require("./routes/userRoutes");
 const profileRoutes = require("./routes/profileRoutes");
 const competenceRoutes = require("./routes/competenceRoutes");
 const adminCompRoutes = require("./routes/adminCompRoutes");
+const courseRoutes = require("./routes/courseRoutes");
 app.use("/api/profile",profileRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/competence", competenceRoutes);
 app.use("/api/admin/competence", adminCompRoutes);
+app.use("/api/courses",courseRoutes);
 
 
-sequelize.sync({alter:false}).then(() =>{
+sequelize.sync({alter:{drop:false}}).then(() =>{
     console.log("Database connected and synchronized.");
     console.log("All Models are synchronized.");
 })
