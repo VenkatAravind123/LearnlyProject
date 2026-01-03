@@ -122,7 +122,7 @@ export default function CourseLearn() {
 
   if (loading) return (
     <div className="card" style={{ textAlign: 'center', padding: '3rem' }}>
-      <div className="muted">⏳ Loading…</div>
+      <div className="muted">Loading…</div>
     </div>
   );
 
@@ -133,7 +133,20 @@ export default function CourseLearn() {
       padding: '2rem',
       textAlign: 'center'
     }}>
-      <div style={{ color: '#fca5a5' }}>⚠️ {error}</div>
+      <div style={{ color: '#fca5a5', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+        <div style={{
+          width: '18px',
+          height: '18px',
+          borderRadius: '50%',
+          border: '2px solid #fca5a5',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontWeight: 'bold',
+          fontSize: '0.75rem'
+        }}>!</div>
+        {error}
+      </div>
     </div>
   );
 
@@ -146,7 +159,22 @@ export default function CourseLearn() {
           padding: '3rem',
           textAlign: 'center'
         }}>
-          <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>🎉</div>
+          <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>
+            <div style={{
+              width: '80px',
+              height: '80px',
+              margin: '0 auto',
+              background: 'linear-gradient(135deg, #4ade80 0%, #22c55e 100%)',
+              borderRadius: '50%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '2rem',
+              fontWeight: 'bold',
+              color: '#fff',
+              boxShadow: '0 8px 24px rgba(34,197,94,0.3)'
+            }}>✓</div>
+          </div>
           <h3 style={{
             background: 'linear-gradient(135deg, #fff 0%, #4ade80 100%)',
             WebkitBackgroundClip: 'text',
@@ -177,7 +205,7 @@ export default function CourseLearn() {
           backgroundClip: 'text',
           fontSize: '1.8rem',
           marginBottom: '0.5rem'
-        }}>📚 {course?.courseName || "Course"}</h3>
+        }}>{course?.courseName || "Course"}</h3>
         <p className="muted" style={{ fontSize: '1rem' }}>
           <span style={{
             background: 'rgba(100,108,255,0.2)',
@@ -190,7 +218,7 @@ export default function CourseLearn() {
               background: 'rgba(97,218,251,0.2)',
               padding: '0.35rem 0.85rem',
               borderRadius: '6px'
-            }}>✨ Style: {recommendedStyle}</span>
+            }}>Learning Style: {recommendedStyle}</span>
           )}
         </p>
       </div>
@@ -206,7 +234,7 @@ export default function CourseLearn() {
           alignItems: 'center',
           gap: '0.5rem',
           marginBottom: '1rem'
-        }}>💡 Explanation</h4>
+        }}>Explanation</h4>
         <div className="muted" style={{
           whiteSpace: "pre-wrap",
           lineHeight: '1.7',
@@ -227,9 +255,9 @@ export default function CourseLearn() {
           alignItems: 'center',
           gap: '0.5rem',
           marginBottom: '1rem'
-        }}>🗂️ Flashcards</h4>
+        }}>Flashcards</h4>
         {flashcards.length === 0 ? (
-          <div className="muted" style={{ textAlign: 'center', padding: '1rem' }}>📭 No flashcards.</div>
+          <div className="muted" style={{ textAlign: 'center', padding: '1rem' }}>No flashcards.</div>
         ) : (
           <div className="grid" style={{ gridTemplateColumns: "repeat(2, 1fr)", gap: '1rem' }}>
             {flashcards.map((f, idx) => (
@@ -262,10 +290,10 @@ export default function CourseLearn() {
           alignItems: 'center',
           gap: '0.5rem',
           marginBottom: '1.5rem'
-        }}>📝 Unit Quiz</h4>
+        }}>Unit Quiz</h4>
 
         {quizQuestions.length === 0 ? (
-          <div className="muted" style={{ textAlign: 'center', padding: '2rem' }}>📭 No quiz questions.</div>
+          <div className="muted" style={{ textAlign: 'center', padding: '2rem' }}>No quiz questions.</div>
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
             {quizQuestions.map((q, idx) => (
@@ -346,7 +374,7 @@ export default function CourseLearn() {
                   transition: 'all 0.2s ease'
                 }}
               >
-                {busy ? "⏳ Submitting..." : "✅ Submit Quiz"}
+                {busy ? "Submitting..." : "Submit Quiz"}
               </button>
 
               <button
@@ -363,7 +391,7 @@ export default function CourseLearn() {
                   transition: 'all 0.2s ease'
                 }}
               >
-                🔄 Reload Unit
+                Reload Unit
               </button>
             </div>
 
@@ -379,7 +407,21 @@ export default function CourseLearn() {
                 textAlign: 'center'
               }}>
                 <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>
-                  {lastResult.passed ? '🎉' : '📚'}
+                  <div style={{
+                    width: '60px',
+                    height: '60px',
+                    margin: '0 auto',
+                    background: lastResult.passed 
+                      ? 'linear-gradient(135deg, #4ade80 0%, #22c55e 100%)'
+                      : 'linear-gradient(135deg, #fca5a5 0%, #ef4444 100%)',
+                    borderRadius: '50%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '1.5rem',
+                    fontWeight: 'bold',
+                    color: '#fff'
+                  }}>{lastResult.passed ? '✓' : 'X'}</div>
                 </div>
                 <div style={{
                   fontSize: '1.1rem',
@@ -390,7 +432,7 @@ export default function CourseLearn() {
                   Score: {lastResult.score}%
                 </div>
                 <div className="muted" style={{ fontSize: '0.9rem' }}>
-                  Pass mark: {lastResult.minPassPercentage}% • {lastResult.passed ? "✅ Passed!" : "❌ Not passed"}
+                  Pass mark: {lastResult.minPassPercentage}% • {lastResult.passed ? "Passed!" : "Not passed"}
                 </div>
               </div>
             )}
@@ -412,7 +454,7 @@ export default function CourseLearn() {
                     fontSize: '1rem'
                   }}
                 >
-                  🚀 Next Unit
+                  Next Unit
                 </button>
               </div>
             )}

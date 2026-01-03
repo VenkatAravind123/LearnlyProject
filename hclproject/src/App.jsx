@@ -18,6 +18,7 @@ import Assistant from "./pages/Assistant";
 import CompleteProfile from "./pages/CompleteProfile"; // <-- Import the new page
 import CompetenceTest from "./pages/CompetenceTest";
 import CourseLearn from "./pages/CourseLearn";
+import Users from "./pages/Users";
 
 function AppLayout({ children, search, setSearch, userRole,user }) {
   return (
@@ -123,6 +124,15 @@ export default function App() {
           )}
         />
 
+        <Route
+          path="/users"
+          element={requireAuth(
+            <AppLayout search={search} setSearch={setSearch} userRole={userRole} user={user}>
+              <Users search={search} userRole={userRole}/>
+            </AppLayout>,
+            ['admin']
+          )}
+        />
         {/* Student routes */}
         <Route
           path="/courses"

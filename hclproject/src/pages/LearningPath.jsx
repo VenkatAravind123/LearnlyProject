@@ -53,7 +53,7 @@ const courseComp = (e)=>{
 
       {loading && (
         <div className="card" style={{ textAlign: 'center', padding: '2rem' }}>
-          <div className="muted">⏳ Loading…</div>
+          <div className="muted">Loading…</div>
         </div>
       )}
       {error && (
@@ -63,7 +63,20 @@ const courseComp = (e)=>{
           padding: '1.5rem',
           textAlign: 'center'
         }}>
-          <div style={{ color: '#fca5a5' }}>⚠️ {error}</div>
+          <div style={{ color: '#fca5a5', display: 'flex', alignItems: 'center', gap: '0.5rem', justifyContent: 'center' }}>
+            <div style={{
+              width: '18px',
+              height: '18px',
+              borderRadius: '50%',
+              border: '2px solid #fca5a5',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontWeight: 'bold',
+              fontSize: '0.75rem'
+            }}>!</div>
+            {error}
+          </div>
         </div>
       )}
 
@@ -74,7 +87,22 @@ const courseComp = (e)=>{
           padding: '3rem',
           textAlign: 'center'
         }}>
-          <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>📚</div>
+          <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>
+            <div style={{
+              width: '80px',
+              height: '80px',
+              margin: '0 auto',
+              background: 'linear-gradient(135deg, #646cff 0%, #61dafb 100%)',
+              borderRadius: '12px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '2rem',
+              fontWeight: 'bold',
+              color: '#fff',
+              boxShadow: '0 4px 16px rgba(100,108,255,0.3)'
+            }}>+</div>
+          </div>
           <h4 style={{
             background: 'linear-gradient(135deg, #fff 0%, #646cff 100%)',
             WebkitBackgroundClip: 'text',
@@ -96,7 +124,7 @@ const courseComp = (e)=>{
                 cursor: 'pointer',
                 fontSize: '1rem'
               }}
-            >🚀 Browse Courses</button>
+            >Browse Courses</button>
           </div>
         </div>
       )}
@@ -151,27 +179,27 @@ const courseComp = (e)=>{
                     padding: '0.25rem 0.65rem',
                     borderRadius: '6px',
                     fontSize: '0.8rem'
-                  }}>📖 {e.course?.subject || "—"}</span>
+                  }}>Subject: {e.course?.subject || "—"}</span>
                   <span style={{
                     background: 'rgba(97,218,251,0.15)',
                     padding: '0.25rem 0.65rem',
                     borderRadius: '6px',
                     fontSize: '0.8rem'
-                  }}>📚 Unit: {e.currentUnitOrder ?? "—"}</span>
+                  }}>Unit: {e.currentUnitOrder ?? "—"}</span>
                   <span style={{
                     background: (e.lastQuizScore ?? 0) >= 60 ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)',
                     padding: '0.25rem 0.65rem',
                     borderRadius: '6px',
                     fontSize: '0.8rem',
                     color: (e.lastQuizScore ?? 0) >= 60 ? '#4ade80' : '#fca5a5'
-                  }}>🎯 Last quiz: {e.lastQuizScore ?? "—"}%</span>
+                  }}>Last quiz: {e.lastQuizScore ?? "—"}%</span>
                   <span style={{
                     background: e.status === 'completed' ? 'rgba(34,197,94,0.15)' : 'rgba(97,218,251,0.15)',
                     padding: '0.25rem 0.65rem',
                     borderRadius: '6px',
                     fontSize: '0.8rem',
                     color: e.status === 'completed' ? '#4ade80' : '#61dafb'
-                  }}>{e.status === 'completed' ? '✅ Completed' : '🔄 Active'}</span>
+                  }}>{e.status === 'completed' ? 'Completed' : 'Active'}</span>
                 </div>
               </div>
               <div className="path-action" style={{ flexShrink: 0 }}>
@@ -189,7 +217,7 @@ const courseComp = (e)=>{
                     transition: 'all 0.2s ease'
                   }}
                 >
-                  🚀 Continue
+                  Continue
                 </button>
               </div>
             </li>

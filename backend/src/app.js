@@ -36,11 +36,17 @@ const profileRoutes = require("./routes/profileRoutes");
 const competenceRoutes = require("./routes/competenceRoutes");
 const adminCompRoutes = require("./routes/adminCompRoutes");
 const courseRoutes = require("./routes/courseRoutes");
+const adminRoutes = require("./routes/adminRoutes");
+const dashboardRoutes = require("./routes/dashboardRoutes")
+const assistantRoutes = require("./routes/assistantRoutes")
 app.use("/api/profile",profileRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/competence", competenceRoutes);
 app.use("/api/admin/competence", adminCompRoutes);
 app.use("/api/courses",courseRoutes);
+app.use("/api/admin/actions",adminRoutes);
+app.use("/api/dashboard",dashboardRoutes);
+app.use("/api/assistant",assistantRoutes);
 
 
 sequelize.sync({alter:{drop:false}}).then(() =>{

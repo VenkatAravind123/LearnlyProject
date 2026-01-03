@@ -182,7 +182,26 @@ export default function Courses({ search, userRole }) {
           borderRadius: '12px',
           marginBottom: '1rem'
         }}>
-          <div style={{ color: '#fca5a5' }}>⚠️ {error}</div>
+          <div style={{ 
+            color: '#fca5a5',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.75rem'
+          }}>
+            <div style={{
+              width: '20px',
+              height: '20px',
+              borderRadius: '50%',
+              border: '2px solid #fca5a5',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontWeight: 'bold',
+              fontSize: '0.85rem',
+              flexShrink: 0
+            }}>!</div>
+            <span>{error}</span>
+          </div>
         </div>
       )}
       {loading && (
@@ -205,150 +224,447 @@ export default function Courses({ search, userRole }) {
             }}
             onClick={() => setShowAdd((v) => !v)}
           >
-            {showAdd ? "✕ Close" : "➕ Add Course"}
+            {showAdd ? "Close" : "+ Add Course"}
           </button>
         </div>
       )}
 
       {isAdmin && showAdd && (
         <div className="card" style={{
-          marginBottom: "1rem",
-          background: 'linear-gradient(135deg, rgba(100,108,255,0.08), rgba(97,218,251,0.04))',
-          border: '1px solid rgba(100,108,255,0.15)'
+          marginBottom: "1.5rem",
+          background: 'linear-gradient(135deg, rgba(100,108,255,0.1), rgba(97,218,251,0.05))',
+          border: '1px solid rgba(100,108,255,0.2)',
+          boxShadow: '0 8px 32px rgba(100,108,255,0.1)',
+          padding: '2rem'
         }}>
-          <h4 style={{
-            background: 'linear-gradient(135deg, #fff 0%, #646cff 100%)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text',
-            marginBottom: '1.5rem'
-          }}>✨ Add New Course</h4>
-          <form onSubmit={submitAddCourse} style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-            <input
-              name="courseName"
-              placeholder="Course Name"
-              value={addForm.courseName}
-              onChange={onAddChange}
-              required
-              style={{
-                padding: '0.75rem',
-                borderRadius: '8px',
-                border: '1px solid rgba(255,255,255,0.1)',
-                background: 'rgba(255,255,255,0.03)',
-                color: 'inherit',
-                transition: 'all 0.2s ease'
-              }}
-            />
-            <input
-              name="subject"
-              placeholder="Subject"
-              value={addForm.subject}
-              onChange={onAddChange}
-              required
-              style={{
-                padding: '0.75rem',
-                borderRadius: '8px',
-                border: '1px solid rgba(255,255,255,0.1)',
-                background: 'rgba(255,255,255,0.03)',
-                color: 'inherit',
-                transition: 'all 0.2s ease'
-              }}
-            />
-            <textarea
-              name="description"
-              placeholder="Description (optional)"
-              value={addForm.description}
-              onChange={onAddChange}
-              rows={3}
-              style={{
-                padding: '0.75rem',
-                borderRadius: '8px',
-                border: '1px solid rgba(255,255,255,0.1)',
-                background: 'rgba(255,255,255,0.03)',
-                color: 'inherit',
-                fontFamily: 'inherit',
-                resize: 'vertical',
-                transition: 'all 0.2s ease'
-              }}
-            />
-            <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
-              <input
-                name="durationMinutes"
-                type="number"
-                min="0"
-                placeholder="Duration Minutes"
-                value={addForm.durationMinutes}
-                onChange={onAddChange}
-                style={{ width: "200px" }}
-              />
-              <input
-                name="minPassPercentage"
-                type="number"
-                min="0"
-                max="100"
-                placeholder="Min Pass %"
-                value={addForm.minPassPercentage}
-                onChange={onAddChange}
-                style={{ width: "200px" }}
-              />
+          {/* Header */}
+          <div style={{
+            textAlign: 'center',
+            marginBottom: '2rem',
+            paddingBottom: '1.5rem',
+            borderBottom: '1px solid rgba(255,255,255,0.1)'
+          }}>
+            <div style={{ 
+              width: '60px',
+              height: '60px',
+              margin: '0 auto 1rem',
+              background: 'linear-gradient(135deg, #646cff 0%, #61dafb 100%)',
+              borderRadius: '12px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '1.5rem',
+              fontWeight: 'bold',
+              color: '#fff',
+              boxShadow: '0 4px 12px rgba(100,108,255,0.3)'
+            }}>+</div>
+            <h3 style={{
+              background: 'linear-gradient(135deg, #fff 0%, #646cff 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+              fontSize: '1.8rem',
+              margin: '0 0 0.5rem 0'
+            }}>Create New Course</h3>
+            <p className="muted" style={{ margin: 0, fontSize: '0.95rem' }}>
+              Fill in the details below to create an adaptive learning course
+            </p>
+          </div>
+
+          <form onSubmit={submitAddCourse} style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+
+            {/* Basic Information Section */}
+            <div>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                marginBottom: '1rem'
+              }}>
+                <div style={{
+                  width: '8px',
+                  height: '8px',
+                  borderRadius: '50%',
+                  background: '#61dafb',
+                  boxShadow: '0 0 8px rgba(97,218,251,0.6)'
+                }}></div>
+                <h4 style={{
+                  margin: 0,
+                  color: '#61dafb',
+                  fontSize: '1.1rem'
+                }}>Basic Information</h4>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                {/* Course Name */}
+                <div>
+                  <label style={{
+                    display: 'block',
+                    marginBottom: '0.5rem',
+                    fontSize: '0.9rem',
+                    fontWeight: '600',
+                    color: 'rgba(255,255,255,0.9)'
+                  }}>
+                    Course Name <span style={{ color: '#fca5a5' }}>*</span>
+                  </label>
+                  <input
+                    name="courseName"
+                    placeholder="e.g., Introduction to React"
+                    value={addForm.courseName}
+                    onChange={onAddChange}
+                    required
+                    style={{
+                      width: '100%',
+                      padding: '0.85rem 1rem',
+                      borderRadius: '10px',
+                      border: '1px solid rgba(255,255,255,0.15)',
+                      background: 'rgba(255,255,255,0.05)',
+                      color: 'inherit',
+                      fontSize: '1rem',
+                      transition: 'all 0.2s ease',
+                      outline: 'none'
+                    }}
+                    onFocus={(e) => e.target.style.borderColor = 'rgba(100,108,255,0.5)'}
+                    onBlur={(e) => e.target.style.borderColor = 'rgba(255,255,255,0.15)'}
+                  />
+                </div>
+
+                {/* Subject */}
+                <div>
+                  <label style={{
+                    display: 'block',
+                    marginBottom: '0.5rem',
+                    fontSize: '0.9rem',
+                    fontWeight: '600',
+                    color: 'rgba(255,255,255,0.9)'
+                  }}>
+                    Subject <span style={{ color: '#fca5a5' }}>*</span>
+                  </label>
+                  <input
+                    name="subject"
+                    placeholder="e.g., Web Development, Data Science"
+                    value={addForm.subject}
+                    onChange={onAddChange}
+                    required
+                    style={{
+                      width: '100%',
+                      padding: '0.85rem 1rem',
+                      borderRadius: '10px',
+                      border: '1px solid rgba(255,255,255,0.15)',
+                      background: 'rgba(255,255,255,0.05)',
+                      color: 'inherit',
+                      fontSize: '1rem',
+                      transition: 'all 0.2s ease',
+                      outline: 'none'
+                    }}
+                    onFocus={(e) => e.target.style.borderColor = 'rgba(100,108,255,0.5)'}
+                    onBlur={(e) => e.target.style.borderColor = 'rgba(255,255,255,0.15)'}
+                  />
+                </div>
+
+                {/* Description */}
+                <div>
+                  <label style={{
+                    display: 'block',
+                    marginBottom: '0.5rem',
+                    fontSize: '0.9rem',
+                    fontWeight: '600',
+                    color: 'rgba(255,255,255,0.9)'
+                  }}>
+                    Description <span className="muted small">(optional)</span>
+                  </label>
+                  <textarea
+                    name="description"
+                    placeholder="Provide a brief description of what students will learn..."
+                    value={addForm.description}
+                    onChange={onAddChange}
+                    rows={4}
+                    style={{
+                      width: '100%',
+                      padding: '0.85rem 1rem',
+                      borderRadius: '10px',
+                      border: '1px solid rgba(255,255,255,0.15)',
+                      background: 'rgba(255,255,255,0.05)',
+                      color: 'inherit',
+                      fontFamily: 'inherit',
+                      fontSize: '1rem',
+                      resize: 'vertical',
+                      transition: 'all 0.2s ease',
+                      outline: 'none',
+                      lineHeight: '1.6'
+                    }}
+                    onFocus={(e) => e.target.style.borderColor = 'rgba(100,108,255,0.5)'}
+                    onBlur={(e) => e.target.style.borderColor = 'rgba(255,255,255,0.15)'}
+                  />
+                </div>
+              </div>
             </div>
 
+            {/* Course Settings Section */}
+            <div>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                marginBottom: '1rem'
+              }}>
+                <div style={{
+                  width: '8px',
+                  height: '8px',
+                  borderRadius: '50%',
+                  background: '#61dafb',
+                  boxShadow: '0 0 8px rgba(97,218,251,0.6)'
+                }}></div>
+                <h4 style={{
+                  margin: 0,
+                  color: '#61dafb',
+                  fontSize: '1.1rem'
+                }}>Course Settings</h4>
+              </div>
+
+              <div style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+                gap: "1rem"
+              }}>
+                {/* Duration */}
+                <div>
+                  <label style={{
+                    display: 'block',
+                    marginBottom: '0.5rem',
+                    fontSize: '0.9rem',
+                    fontWeight: '600',
+                    color: 'rgba(255,255,255,0.9)'
+                  }}>
+                    Duration (minutes)
+                  </label>
+                  <input
+                    name="durationMinutes"
+                    type="number"
+                    min="0"
+                    placeholder="60"
+                    value={addForm.durationMinutes}
+                    onChange={onAddChange}
+                    style={{
+                      width: '100%',
+                      padding: '0.85rem 1rem',
+                      borderRadius: '10px',
+                      border: '1px solid rgba(255,255,255,0.15)',
+                      background: 'rgba(255,255,255,0.05)',
+                      color: 'inherit',
+                      fontSize: '1rem',
+                      transition: 'all 0.2s ease',
+                      outline: 'none'
+                    }}
+                    onFocus={(e) => e.target.style.borderColor = 'rgba(100,108,255,0.5)'}
+                    onBlur={(e) => e.target.style.borderColor = 'rgba(255,255,255,0.15)'}
+                  />
+                </div>
+
+                {/* Pass Percentage */}
+                <div>
+                  <label style={{
+                    display: 'block',
+                    marginBottom: '0.5rem',
+                    fontSize: '0.9rem',
+                    fontWeight: '600',
+                    color: 'rgba(255,255,255,0.9)'
+                  }}>
+                    Minimum Pass %
+                  </label>
+                  <input
+                    name="minPassPercentage"
+                    type="number"
+                    min="0"
+                    max="100"
+                    placeholder="60"
+                    value={addForm.minPassPercentage}
+                    onChange={onAddChange}
+                    style={{
+                      width: '100%',
+                      padding: '0.85rem 1rem',
+                      borderRadius: '10px',
+                      border: '1px solid rgba(255,255,255,0.15)',
+                      background: 'rgba(255,255,255,0.05)',
+                      color: 'inherit',
+                      fontSize: '1rem',
+                      transition: 'all 0.2s ease',
+                      outline: 'none'
+                    }}
+                    onFocus={(e) => e.target.style.borderColor = 'rgba(100,108,255,0.5)'}
+                    onBlur={(e) => e.target.style.borderColor = 'rgba(255,255,255,0.15)'}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* First Unit Section */}
             <div className="card" style={{
-              background: 'rgba(255,255,255,0.02)',
-              border: '1px solid rgba(255,255,255,0.05)'
+              background: 'linear-gradient(135deg, rgba(97,218,251,0.1), rgba(100,108,255,0.05))',
+              border: '1px solid rgba(97,218,251,0.2)',
+              padding: '1.5rem',
+              borderRadius: '12px'
             }}>
-              <h4 style={{ marginTop: 0, color: '#61dafb' }}>📚 Unit 1</h4>
-              <input
-                name="unitTitle"
-                placeholder="Unit Title"
-                value={addForm.unitTitle}
-                onChange={onAddChange}
-                style={{
-                  padding: '0.75rem',
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                marginBottom: '1rem'
+              }}>
+                <div style={{
+                  width: '8px',
+                  height: '8px',
+                  borderRadius: '50%',
+                  background: '#61dafb',
+                  boxShadow: '0 0 8px rgba(97,218,251,0.6)'
+                }}></div>
+                <h4 style={{
+                  margin: 0,
+                  color: '#61dafb',
+                  fontSize: '1.1rem'
+                }}>First Unit</h4>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                {/* Unit Title */}
+                <div>
+                  <label style={{
+                    display: 'block',
+                    marginBottom: '0.5rem',
+                    fontSize: '0.9rem',
+                    fontWeight: '600',
+                    color: 'rgba(255,255,255,0.9)'
+                  }}>
+                    Unit Title
+                  </label>
+                  <input
+                    name="unitTitle"
+                    placeholder="e.g., Getting Started with Components"
+                    value={addForm.unitTitle}
+                    onChange={onAddChange}
+                    style={{
+                      width: '100%',
+                      padding: '0.85rem 1rem',
+                      borderRadius: '10px',
+                      border: '1px solid rgba(255,255,255,0.15)',
+                      background: 'rgba(255,255,255,0.05)',
+                      color: 'inherit',
+                      fontSize: '1rem',
+                      transition: 'all 0.2s ease',
+                      outline: 'none'
+                    }}
+                    onFocus={(e) => e.target.style.borderColor = 'rgba(97,218,251,0.5)'}
+                    onBlur={(e) => e.target.style.borderColor = 'rgba(255,255,255,0.15)'}
+                  />
+                </div>
+
+                {/* Unit Content */}
+                <div>
+                  <label style={{
+                    display: 'block',
+                    marginBottom: '0.5rem',
+                    fontSize: '0.9rem',
+                    fontWeight: '600',
+                    color: 'rgba(255,255,255,0.9)'
+                  }}>
+                    Unit Content
+                  </label>
+                  <textarea
+                    name="unitContent"
+                    placeholder="Enter the base content for this unit. This will be used by the AI to generate adaptive lessons..."
+                    value={addForm.unitContent}
+                    onChange={onAddChange}
+                    rows={6}
+                    style={{
+                      width: '100%',
+                      padding: '0.85rem 1rem',
+                      borderRadius: '10px',
+                      border: '1px solid rgba(255,255,255,0.15)',
+                      background: 'rgba(255,255,255,0.05)',
+                      color: 'inherit',
+                      fontFamily: 'inherit',
+                      fontSize: '1rem',
+                      resize: 'vertical',
+                      transition: 'all 0.2s ease',
+                      outline: 'none',
+                      lineHeight: '1.6'
+                    }}
+                    onFocus={(e) => e.target.style.borderColor = 'rgba(97,218,251,0.5)'}
+                    onBlur={(e) => e.target.style.borderColor = 'rgba(255,255,255,0.15)'}
+                  />
+                </div>
+
+                {/* Info Box */}
+                <div style={{
+                  background: 'rgba(97,218,251,0.1)',
+                  border: '1px solid rgba(97,218,251,0.2)',
                   borderRadius: '8px',
-                  border: '1px solid rgba(255,255,255,0.1)',
-                  background: 'rgba(255,255,255,0.03)',
-                  color: 'inherit',
-                  width: '100%',
-                  marginBottom: '0.75rem'
-                }}
-              />
-              <textarea
-                name="unitContent"
-                placeholder="Unit Content (baseContent)"
-                value={addForm.unitContent}
-                onChange={onAddChange}
-                rows={5}
-                style={{
-                  padding: '0.75rem',
-                  borderRadius: '8px',
-                  border: '1px solid rgba(255,255,255,0.1)',
-                  background: 'rgba(255,255,255,0.03)',
-                  color: 'inherit',
-                  fontFamily: 'inherit',
-                  width: '100%',
-                  resize: 'vertical'
-                }}
-              />
-              <div className="muted small" style={{ marginTop: '0.5rem' }}>💡 This is the first unit used by the adaptive lesson generator.</div>
+                  padding: '0.75rem 1rem',
+                  display: 'flex',
+                  gap: '0.75rem',
+                  alignItems: 'flex-start'
+                }}>
+                  <div style={{
+                    width: '24px',
+                    height: '24px',
+                    borderRadius: '50%',
+                    background: 'rgba(97,218,251,0.2)',
+                    border: '2px solid rgba(97,218,251,0.4)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '0.75rem',
+                    fontWeight: 'bold',
+                    color: '#61dafb',
+                    flexShrink: 0
+                  }}>i</div>
+                  <div className="muted small" style={{ lineHeight: '1.5' }}>
+                    This is the foundational content for your first unit. The adaptive learning system will use this to generate personalized lessons, flashcards, and quizzes based on each student's learning style and performance.
+                  </div>
+                </div>
+              </div>
             </div>
 
-            <button
-              type="submit"
-              disabled={busyId === "add"}
-              style={{
-                background: busyId === "add" ? 'rgba(255,255,255,0.05)' : 'linear-gradient(135deg, #646cff 0%, #61dafb 100%)',
-                border: 'none',
-                padding: '0.85rem 1.5rem',
-                borderRadius: '10px',
-                fontWeight: '600',
-                cursor: busyId === "add" ? 'not-allowed' : 'pointer',
-                opacity: busyId === "add" ? 0.6 : 1,
-                transition: 'all 0.2s ease'
-              }}
-            >
-              {busyId === "add" ? "⏳ Creating..." : "✨ Create Course"}
-            </button>
+            {/* Submit Button */}
+            <div style={{
+              display: 'flex',
+              gap: '1rem',
+              paddingTop: '1rem',
+              borderTop: '1px solid rgba(255,255,255,0.1)'
+            }}>
+              <button
+                type="submit"
+                disabled={busyId === "add"}
+                style={{
+                  flex: 1,
+                  background: busyId === "add" ? 'rgba(255,255,255,0.05)' : 'linear-gradient(135deg, #646cff 0%, #61dafb 100%)',
+                  border: 'none',
+                  padding: '1rem 2rem',
+                  borderRadius: '12px',
+                  fontWeight: '600',
+                  fontSize: '1.05rem',
+                  cursor: busyId === "add" ? 'not-allowed' : 'pointer',
+                  opacity: busyId === "add" ? 0.6 : 1,
+                  transition: 'all 0.3s ease',
+                  boxShadow: busyId === "add" ? 'none' : '0 4px 16px rgba(100,108,255,0.3)',
+                  transform: busyId === "add" ? 'none' : 'translateY(0)',
+                }}
+                onMouseEnter={(e) => {
+                  if (busyId !== "add") {
+                    e.target.style.transform = 'translateY(-2px)';
+                    e.target.style.boxShadow = '0 6px 24px rgba(100,108,255,0.4)';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (busyId !== "add") {
+                    e.target.style.transform = 'translateY(0)';
+                    e.target.style.boxShadow = '0 4px 16px rgba(100,108,255,0.3)';
+                  }
+                }}
+              >
+                {busyId === "add" ? "Creating Course..." : "Create Course"}
+              </button>
+            </div>
           </form>
         </div>
       )}
@@ -374,19 +690,19 @@ export default function Courses({ search, userRole }) {
                   padding: '0.25rem 0.75rem',
                   borderRadius: '6px',
                   fontSize: '0.8rem'
-                }}>📖 {c.subject}</span>
+                }}>{c.subject}</span>
                 <span style={{
                   background: 'rgba(97,218,251,0.15)',
                   padding: '0.25rem 0.75rem',
                   borderRadius: '6px',
                   fontSize: '0.8rem'
-                }}>⏱️ {formatDurationMinutes(c.durationMinutes)}</span>
+                }}>{formatDurationMinutes(c.durationMinutes)}</span>
                 <span style={{
                   background: 'rgba(34,197,94,0.15)',
                   padding: '0.25rem 0.75rem',
                   borderRadius: '6px',
                   fontSize: '0.8rem'
-                }}>✓ Pass: {c.minPassPercentage}%</span>
+                }}>Pass: {c.minPassPercentage}%</span>
               </div>
             </div>
 
@@ -405,7 +721,7 @@ export default function Courses({ search, userRole }) {
                     opacity: (enrollmentsLoading && selectedCourse?.courseId === c.courseId) ? 0.6 : 1
                   }}
                 >
-                  {enrollmentsLoading && selectedCourse?.courseId === c.courseId ? "⏳ Loading..." : "👥 View Students"}
+                  {enrollmentsLoading && selectedCourse?.courseId === c.courseId ? "Loading..." : "View Students"}
                 </button>
               ) : (
                 <button
@@ -421,7 +737,7 @@ export default function Courses({ search, userRole }) {
                     opacity: busyId === c.courseId ? 0.6 : 1
                   }}
                 >
-                  {busyId === c.courseId ? "⏳ Starting..." : "🚀 Start"}
+                  {busyId === c.courseId ? "Starting..." : "Start Course"}
                 </button>
               )}
             </div>
@@ -443,7 +759,7 @@ export default function Courses({ search, userRole }) {
             backgroundClip: 'text',
             marginBottom: '1.5rem'
           }}>
-            👥 Enrolled Students: {selectedCourse.courseName}
+            Enrolled Students: {selectedCourse.courseName}
           </h4>
           <div className="muted small" style={{ marginBottom: '1rem' }}>Course ID: {selectedCourse.courseId}</div>
 
@@ -454,14 +770,28 @@ export default function Courses({ search, userRole }) {
               padding: '0.75rem',
               borderRadius: '8px',
               color: '#fca5a5'
-            }}>⚠️ {enrollmentsError}</div>
+            }}>
+              <div style={{
+                width: '18px',
+                height: '18px',
+                borderRadius: '50%',
+                border: '2px solid #fca5a5',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontWeight: 'bold',
+                fontSize: '0.75rem',
+                marginRight: '0.5rem'
+              }}>!</div>
+              {enrollmentsError}
+            </div>
           )}
           {enrollmentsLoading && (
-            <div className="muted" style={{ textAlign: 'center', padding: '1rem' }}>⏳ Loading enrollments…</div>
+            <div className="muted" style={{ textAlign: 'center', padding: '1rem' }}>Loading enrollments…</div>
           )}
 
           {!enrollmentsLoading && enrolledStudents.length === 0 && (
-            <div className="muted" style={{ textAlign: 'center', padding: '2rem' }}>📭 No enrollments yet.</div>
+            <div className="muted" style={{ textAlign: 'center', padding: '2rem' }}>No enrollments yet.</div>
           )}
 
           {!enrollmentsLoading && enrolledStudents.length > 0 && (
