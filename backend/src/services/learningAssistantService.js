@@ -1,10 +1,9 @@
 const axios = require("axios");
-const pdfParseImport = require("pdf-parse");
-const pdfParse = typeof pdfParseImport === "function" ? pdfParseImport : pdfParseImport.default;
+const pdfParse = require("pdf-parse"); // works with pdf-parse@1.1.1 (CommonJS)
 const Tesseract = require("tesseract.js");
 
 const DEFAULT_OLLAMA_BASE_URL = "http://localhost:11434";
-const DEFAULT_OLLAMA_MODEL = "llama3.2:3b";
+const DEFAULT_OLLAMA_MODEL = "gpt-oss:120b-cloud";
 
 function stripCodeFences(text) {
   if (!text) return "";
@@ -32,16 +31,13 @@ function truncate(s, max = 12000) {
 }
 
 async function fileToText(file) {
-  const mime = String(file.mimetype || "").toLowerCase();
+  const mime = String(file?.mimetype || "").toLowerCase();
 
   // PDF -> text
   if (mime.includes("pdf")) {
-  if (typeof pdfParse !== "function") {
-    throw new Error("pdf-parse import failed (pdfParse is not a function). Reinstall pdf-parse or use the interop import.");
+    const data = await pdfParse(file.buffer);
+    return data?.text || "";
   }
-  const data = await pdfParse(file.buffer);
-  return data?.text || "";
-}
 
   // Images -> OCR text
   if (mime.startsWith("image/")) {
@@ -58,6 +54,9 @@ function validateAssistantResponse(obj) {
   if (typeof obj.simplifiedExplanation !== "string") return false;
   if (!Array.isArray(obj.keyPoints)) return false;
   if (!Array.isArray(obj.studyPlan)) return false;
+  if (typeof obj.practice !== "object" || obj.practice === null) return false;
+  if (!Array.isArray(obj.practice.flashcards)) return false;
+  if (!Array.isArray(obj.practice.questions)) return false;
   return true;
 }
 
@@ -66,6 +65,7 @@ async function callOllamaJSON(prompt) {
   const model = process.env.OLLAMA_MODEL || DEFAULT_OLLAMA_MODEL;
 
   const url = `${baseUrl.replace(/\/$/, "")}/api/chat`;
+
   const res = await axios.post(
     url,
     {
@@ -78,7 +78,8 @@ async function callOllamaJSON(prompt) {
       ],
       options: { temperature: 0.5 },
     },
-    { headers: { "Content-Type": "application/json" }, timeout: 60000 }
+    { headers: { "Content-Type": "application/json" },
+  timeout: Number(process.env.OLLAMA_TIMEOUT_MS) || 180000 }
   );
 
   return res?.data?.message?.content || "";
@@ -87,7 +88,7 @@ async function callOllamaJSON(prompt) {
 async function runLearningAssistant({ message, files, profile }) {
   const extractedChunks = [];
 
-  for (const f of files) {
+  for (const f of files || []) {
     const text = await fileToText(f);
     if (text && text.trim()) {
       extractedChunks.push(`FILE: ${f.originalname}\n${text}`);
@@ -100,10 +101,10 @@ async function runLearningAssistant({ message, files, profile }) {
 You are a learning tutor. The user wants to understand the content.
 
 Student profile:
-- Level: ${profile.currentLevel}
-- Learning style: ${profile.learningStyle} (Visual/Text/Practice)
-- Preferred language: ${profile.preferredLanguage}
-- Competence score (0-100): ${profile.lastCompetencyScore}
+- Level: ${profile?.currentLevel}
+- Learning style: ${profile?.learningStyle} (Visual/Text/Practice)
+- Preferred language: ${profile?.preferredLanguage}
+- Competence score (0-100): ${profile?.lastCompetencyScore}
 
 User question/message:
 ${message || "(no message)"}
@@ -142,7 +143,10 @@ Rules:
   const raw = await callOllamaJSON(prompt);
   const obj = extractJson(raw);
 
-  if (!validateAssistantResponse(obj)) throw new Error("Assistant JSON failed validation.");
+  if (!validateAssistantResponse(obj)) {
+    throw new Error("Assistant JSON failed validation.");
+  }
+
   return obj;
 }
 

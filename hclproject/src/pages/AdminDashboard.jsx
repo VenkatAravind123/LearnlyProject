@@ -78,54 +78,112 @@ export default function AdminDashboard() {
         </ul>
       </div>
       <div className="card" style={{ marginTop: "2rem" }}>
-        <h3>Generate AI Competence Questions</h3>
-        <form onSubmit={handleGenerate} style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
-          <input
-            name="subject"
-            placeholder="Subject"
-            value={form.subject}
-            onChange={handleChange}
-            required
-          />
-          <input
-            name="topic"
-            placeholder="Topic"
-            value={form.topic}
-            onChange={handleChange}
-            required
-          />
-          <select name="difficulty" value={form.difficulty} onChange={handleChange}>
-            <option value="easy">Easy</option>
-            <option value="medium">Medium</option>
-            <option value="hard">Hard</option>
-          </select>
-          <input
-            name="count"
-            type="number"
-            min="1"
-            max="20"
-            value={form.count}
-            onChange={handleChange}
-            style={{ width: "80px" }}
-          />
-          <button type="submit" disabled={loading}>
-            {loading ? "Generating..." : "Generate"}
-          </button>
-        </form>
-        {error && <p style={{ color: "red" }}>{error}</p>}
-        {result && (
-          <div style={{ marginTop: "1rem" }}>
-            <h4>Generated Questions:</h4>
-            <ol>
-              {Array.isArray(result) ? result.map((q, i) => (
-                <li key={i}>{q.question || q.questionText || JSON.stringify(q)}</li>
-              )) : (
-                <p>Generated {result.questionsGenerated || 0} questions (check console/DB)</p>
-              )}
-            </ol>
+  <div className="card-head">
+    <div>
+      <h3>Generate AI Competence Questions</h3>
+      <p className="muted small">
+        Generates questions via Ollama and saves them to the database.
+      </p>
+    </div>
+
+    <div className="actions">
+      <button
+        className="ghost"
+        type="button"
+        onClick={() => {
+          setForm({ subject: "", topic: "", difficulty: "easy", count: 5 });
+          setError("");
+          setResult(null);
+        }}
+        disabled={loading}
+      >
+        Reset
+      </button>
+
+      <button type="submit" form="ai-q-form" className="btn-primary" disabled={loading}>
+        {loading ? "Generating..." : "Generate"}
+      </button>
+    </div>
+  </div>
+
+  <form id="ai-q-form" onSubmit={handleGenerate} className="form-grid">
+    <div className="form-field">
+      <label>Subject</label>
+      <input
+        name="subject"
+        placeholder="e.g., Computer Networks"
+        value={form.subject}
+        onChange={handleChange}
+        required
+        disabled={loading}
+      />
+    </div>
+
+    <div className="form-field">
+      <label>Topic</label>
+      <input
+        name="topic"
+        placeholder="e.g., OSI Model"
+        value={form.topic}
+        onChange={handleChange}
+        required
+        disabled={loading}
+      />
+    </div>
+
+    <div className="form-field">
+      <label>Difficulty</label>
+      <select
+        name="difficulty"
+        value={form.difficulty}
+        onChange={handleChange}
+        disabled={loading}
+      >
+        <option value="easy">Easy</option>
+        <option value="medium">Medium</option>
+        <option value="hard">Hard</option>
+      </select>
+    </div>
+
+    <div className="form-field">
+      <label>Count</label>
+      <input
+        name="count"
+        type="number"
+        min="1"
+        max="50"
+        value={form.count}
+        onChange={handleChange}
+        disabled={loading}
+      />
+      <div className="hint">Allowed: 1 to 50</div>
+    </div>
+  </form>
+
+  {error && <div className="alert alert-error">{error}</div>}
+
+  {result && (
+    <div className="result-box">
+      <div className="result-row">
+        <div>
+          <div className="muted small">Saved Test</div>
+          <div className="result-title">
+            {(result?.test?.subject || form.subject) + " — " + (result?.test?.topic || form.topic)}
           </div>
-        )}
+          <div className="muted small">
+            Difficulty: {result?.test?.difficultyLevel || form.difficulty} · Total:{" "}
+            {result?.test?.totalQuestions ?? result?.questionsGenerated ?? form.count}
+          </div>
+          <div className="muted small" style={{ marginTop: "0.35rem" }}>
+            Test ID: {result?.test?.id ?? "—"}
+          </div>
+        </div>
+
+        <div className="result-pill">{result?.questionsGenerated ?? 0} Questions Saved</div>
       </div>
+    </div>
+  )}
+</div>
     </section>
 
   );
