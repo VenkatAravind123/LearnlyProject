@@ -19,10 +19,12 @@ import CompleteProfile from "./pages/CompleteProfile"; // <-- Import the new pag
 import CompetenceTest from "./pages/CompetenceTest";
 import CourseLearn from "./pages/CourseLearn";
 import Users from "./pages/Users";
+import Schedule from "./pages/Schedule";
 
 function AppLayout({ children, search, setSearch, userRole,user }) {
   return (
     <div className="app-root">
+      
       <Sidebar userRole={userRole} user={user}/>
       <div className="main-area">
         <Header search={search} setSearch={setSearch} user={user}/>
@@ -202,6 +204,15 @@ export default function App() {
             ['student']
           )}
         />
+        <Route
+  path="/schedule"
+  element={requireAuth(
+    <AppLayout search={search} setSearch={setSearch} userRole={userRole} user={user}>
+      <Schedule />
+    </AppLayout>,
+    ["student"]
+  )}
+/>
         
         <Route
           path="/profile"

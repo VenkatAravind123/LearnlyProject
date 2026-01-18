@@ -9,6 +9,7 @@ const studentItems = [
   { id: "progress", label: "Progress", emoji: "📈", path: "/progress" },
   { id: "assistant", label: "AI Assistant", emoji: "🤖", path: "/assistant" },
   { id: "profile", label: "Profile", emoji: "👤", path: "/profile" },
+  { id: "schedule", label: "Schedule", emoji: "🗓️", path: "/schedule" },
 ];
 
 const adminItems = [

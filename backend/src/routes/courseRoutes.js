@@ -9,7 +9,9 @@ router.get("/", authMiddleware, courseController.listCourses);
 router.post("/", authMiddleware, requireRole("admin"), courseController.createCourse);
 
 router.post("/:courseId/enroll", authMiddleware, courseController.enroll);
+router.get("/:courseId/outline", authMiddleware, courseController.getCourseOutline);
 router.get("/:courseId/next", authMiddleware, courseController.getNextUnit);
+
 router.post("/:courseId/units/:unitId/quiz/submit", authMiddleware, courseController.submitUnitQuiz);
 
 

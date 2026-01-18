@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
+import {  useNavigate } from "react-router-dom";
 
 const API_BASE = "http://localhost:5000";
 
@@ -87,7 +88,17 @@ export default function CourseLearn() {
   function setAnswer(questionId, selectedOption) {
     setAnswersByQid((prev) => ({ ...prev, [questionId]: selectedOption }));
   }
+const navigate = useNavigate();
 
+async function generateCoursePlan() {
+  await fetch(`${API_BASE}/api/plan/generate`, {
+    method: "POST",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ courseId: Number(courseId), days: 14, dailyMinutes: 30, preferredTime: "evening" }),
+  });
+  navigate(`/schedule?courseId=${courseId}`);
+}
   async function submitQuiz() {
     try {
       if (!unitId) return;
@@ -240,6 +251,12 @@ export default function CourseLearn() {
           lineHeight: '1.7',
           fontSize: '0.95rem'
         }}>
+          <div className="actions" style={{ marginTop: "1rem" }}>
+  <button onClick={generateCoursePlan}>Generate Plan for This Course</button>
+  <button className="ghost" onClick={() => navigate(`/schedule?courseId=${courseId}`)}>
+    View Plan
+  </button>
+</div>
           {explanationText || "No explanation returned."}
         </div>
       </div>

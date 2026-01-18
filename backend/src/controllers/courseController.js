@@ -14,6 +14,69 @@ function toInt(v, fallback) {
   return Number.isFinite(n) ? n : fallback;
 }
 
+exports.getCourseOutline = async (req, res) => {
+  try {
+    const courseId = Number(req.params.courseId);
+    const userId = req.user.userId;
+
+    const course = await Course.findByPk(courseId);
+    if (!course) return res.status(404).json({ error: "Course not found" });
+
+    const enrollment = await CourseEnrollment.findOne({ where: { userId, courseId } });
+
+    const units = await CourseUnit.findAll({
+      where: { courseId },
+      order: [["order", "ASC"]],
+      attributes: ["id", "title", "order"],
+    });
+
+    const currentUnitOrder = Number(enrollment?.currentUnitOrder || 1);
+    const isCourseCompleted = enrollment?.status === "completed";
+
+    const perUnitEstimate = units.length
+      ? Math.max(10, Math.min(90, Math.round(Number(course.durationMinutes || 0) / units.length) || 30))
+      : 30;
+
+    const outlineUnits = units.map((u) => {
+      let status = "locked";
+      if (isCourseCompleted) status = "completed";
+      else if (u.order < currentUnitOrder) status = "completed";
+      else if (u.order === currentUnitOrder) status = "current";
+
+      return {
+        id: u.id,
+        title: u.title,
+        order: u.order,
+        status,
+        durationMinEstimate: perUnitEstimate,
+      };
+    });
+
+    return res.json({
+      course: {
+        courseId: course.courseId,
+        courseName: course.courseName,
+        subject: course.subject,
+        description: course.description || "",
+        durationMinutes: course.durationMinutes,
+        minPassPercentage: course.minPassPercentage,
+      },
+      enrollment: enrollment
+        ? {
+            status: enrollment.status,
+            currentUnitOrder: enrollment.currentUnitOrder,
+            lastQuizScore: enrollment.lastQuizScore,
+            recommendedStyle: enrollment.recommendedStyle,
+          }
+        : null,
+      units: outlineUnits,
+    });
+  } catch (e) {
+    console.error("getCourseOutline error:", e);
+    return res.status(500).json({ error: e.message });
+  }
+};
+
 exports.createCourse = async (req, res) => {
   try {
     const { courseName, subject, description, durationMinutes, minPassPercentage, units } = req.body;
@@ -243,6 +306,30 @@ exports.submitUnitQuiz = async (req, res) => {
     }
 
     await enrollment.save();
+    // Auto-complete the matching plan quiz task when the student passes
+if (passed) {
+  const LearningPlan = require("../models/LearningPlan");
+  const LearningPlanTask = require("../models/LearningPlanTask");
+
+  const activePlan = await LearningPlan.findOne({
+    where: { userId, status: "active", courseId },
+  });
+
+  if (activePlan) {
+    await LearningPlanTask.update(
+      { status: "completed", completedAt: new Date() },
+      {
+        where: {
+          planId: activePlan.id,
+          courseId,
+          unitId,
+          type: "quiz",
+          status: "pending",
+        },
+      }
+    );
+  }
+}
 
     return res.json({
       score,

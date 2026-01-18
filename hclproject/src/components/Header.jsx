@@ -10,6 +10,7 @@ const pageTitles = {
   "/progress": "Progress",
   "/assistant": "AI Assistant",
   "/profile": "Profile",
+  "/schedule": "Schedule",
 };
 
 export default function Header({ search, setSearch,user }) {
@@ -50,14 +51,14 @@ export default function Header({ search, setSearch,user }) {
       </div>
 
       <div className="header-right" ref={menuRef} style={{ position: "relative" }}>
-        <label className="search">
+        {/* <label className="search">
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search courses, topics..."
             aria-label="Search courses"
           />
-        </label>
+        </label> */}
         <button
           className="ghost"
           onClick={() => setShowMenu((v) => !v)}

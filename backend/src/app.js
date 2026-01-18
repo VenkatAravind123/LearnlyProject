@@ -14,6 +14,9 @@ require("./models/CourseUnit")
 require("./models/CourseEnrollment")
 require("./models/CourseUnitQuizQuestion")
 require("./models/CourseUnitQuizAttempt")
+//Learning Plan Models
+require("./models/LearningPlan")
+require("./models/LearningPlanTask")
 
 
 const app = express();
@@ -39,6 +42,7 @@ const courseRoutes = require("./routes/courseRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 const dashboardRoutes = require("./routes/dashboardRoutes")
 const assistantRoutes = require("./routes/assistantRoutes")
+const planRoutes = require("./routes/planRoutes");
 app.use("/api/profile",profileRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/competence", competenceRoutes);
@@ -47,8 +51,7 @@ app.use("/api/courses",courseRoutes);
 app.use("/api/admin/actions",adminRoutes);
 app.use("/api/dashboard",dashboardRoutes);
 app.use("/api/assistant",assistantRoutes);
-
-
+app.use("/api/plan",planRoutes);
 sequelize.sync({alter:{drop:false}}).then(() =>{
     console.log("Database connected and synchronized.");
     console.log("All Models are synchronized.");
