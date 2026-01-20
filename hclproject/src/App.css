@@ -2333,3 +2333,171 @@
   }
 }
 
+/* Header */
+.header {
+  border-bottom: 1px solid var(--border);
+}
+
+.header-right {
+  position: relative;
+}
+
+.header-sub {
+  color: var(--muted);
+}
+
+.search input {
+  border: 1px solid var(--border);
+  background: var(--input-bg);
+  color: var(--text);
+}
+
+.search input:focus {
+  border-color: rgba(100, 108, 255, 0.45);
+  background: var(--input-bg-focus);
+}
+
+/* Helpers */
+.muted {
+  color: var(--muted);
+}
+
+/* Cards */
+.card {
+  background: var(--card-grad);
+  border: 1px solid var(--border);
+}
+
+.course-card {
+  background: var(--card-grad);
+  border: 1px solid var(--border);
+}
+
+.course-card:hover {
+  background: var(--card-grad-hover);
+}
+
+/* Ghost buttons (account button etc.) */
+.ghost {
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+
+.ghost:hover {
+  background: var(--menu-item-hover);
+  border-color: var(--border-strong);
+}
+
+/* Existing auth .btn-ghost should NOT force white text */
+.btn-ghost {
+  background: var(--input-bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+
+.btn-ghost:hover {
+  background: var(--menu-item-hover);
+  border-color: rgba(100, 108, 255, 0.3);
+}
+
+/* Auth inputs should not be #fff in light mode */
+.auth-form label {
+  color: var(--text);
+}
+
+.auth-form input,
+.auth-form select {
+  border: 1px solid var(--border);
+  background: var(--input-bg);
+  color: var(--text);
+}
+
+/* Theme toggle */
+.theme-toggle {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--border);
+  background: var(--input-bg);
+  color: var(--text);
+  transition: all 0.2s ease;
+}
+
+.theme-toggle:hover {
+  background: var(--menu-item-hover);
+  border-color: var(--border-strong);
+}
+
+.theme-toggle svg {
+  font-size: 1.05rem;
+}
+
+/* Account dropdown */
+.account-menu {
+  position: absolute;
+  right: 0;
+  top: 2.75rem;
+  background: var(--menu-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 10px 30px var(--shadow);
+  z-index: 20;
+  min-width: 180px;
+  padding: 0.35rem;
+}
+
+.account-menu-item {
+  width: 100%;
+  text-align: left;
+  padding: 0.6rem 0.75rem;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.account-menu-item:hover {
+  background: var(--menu-item-hover);
+  border-color: var(--border);
+} 
+
+/* ===== Light/Dark theme fixes for Learning Path ===== */
+.lp-search,
+.lp-select {
+  border: 1px solid var(--border);
+  background: var(--input-bg);
+  color: var(--text);
+}
+
+.lp-select option {
+  background: var(--menu-bg);
+  color: var(--text);
+}
+
+.lp-dot {
+  border: 2px solid var(--border-strong);
+  background: var(--input-bg);
+}
+
+.lp-line {
+  background: var(--border);
+}
+
+.lp-card {
+  background: var(--card-grad);
+  border: 1px solid var(--border);
+}
+
+.lp-badge {
+  border: 1px solid var(--border);
+  background: var(--input-bg);
+  color: var(--text);
+}
+
+.lp-progress-bar {
+  background: var(--surface-2);
+}

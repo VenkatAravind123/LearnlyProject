@@ -10,6 +10,10 @@ const CourseEnrollment = sequelize.define(
     currentUnitOrder: { type: DataTypes.INTEGER, defaultValue: 1 },
     lastQuizScore: { type: DataTypes.INTEGER, defaultValue: 0 }, // 0-100
     recommendedStyle: { type: DataTypes.ENUM("Visual", "Text", "Practice"), defaultValue: "Text" },
+
+    // NEW: placement test result
+    placementScore: { type: DataTypes.INTEGER, allowNull: true }, // null until completed
+    placementCompletedAt: { type: DataTypes.DATE, allowNull: true },
   },
   { timestamps: true }
 );

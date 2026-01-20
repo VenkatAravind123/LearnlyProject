@@ -24,6 +24,10 @@ export default function CourseLearn() {
   const [answersByQid, setAnswersByQid] = useState({});
   const [lastResult, setLastResult] = useState(null);
 
+  const [placementRequired, setPlacementRequired] = useState(false);
+const [placementQuestions, setPlacementQuestions] = useState([]);
+const [placementAnswers, setPlacementAnswers] = useState({});
+const [placementResult, setPlacementResult] = useState(null);
   const unitId = unit?.id;
 
   const canSubmit = useMemo(() => {
@@ -52,6 +56,21 @@ export default function CourseLearn() {
         credentials: "include",
       });
       const data = await res.json();
+      if (data?.placementRequired) {
+  setPlacementRequired(true);
+  setPlacementQuestions(Array.isArray(data.placementQuestions) ? data.placementQuestions : []);
+  setPlacementAnswers({});
+  setPlacementResult(null);
+
+  setCourse(data.course || null);
+  setUnit(null);
+  setExplanationText("");
+  setRecommendedStyle("");
+  setQuizQuestions([]);
+  setFlashcards([]);
+  return;
+}
+setPlacementRequired(false);
 
       if (!res.ok) throw new Error(data?.error || "Failed to load course unit");
 
@@ -89,7 +108,34 @@ export default function CourseLearn() {
     setAnswersByQid((prev) => ({ ...prev, [questionId]: selectedOption }));
   }
 const navigate = useNavigate();
+async function submitPlacement() {
+  try {
+    setBusy(true);
+    setError("");
 
+    const answers = placementQuestions.map((q) => ({
+      questionId: q.id,
+      selectedOption: placementAnswers[q.id],
+    }));
+
+    const res = await fetch(`${API_BASE}/api/courses/${courseId}/placement/submit`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ answers }),
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data?.error || "Placement submit failed");
+
+    setPlacementResult(data);
+    await loadNext(); // now server will allow unit 1
+  } catch (e) {
+    setError(e.message || "Failed to submit placement test");
+  } finally {
+    setBusy(false);
+  }
+}
 async function generateCoursePlan() {
   await fetch(`${API_BASE}/api/plan/generate`, {
     method: "POST",
@@ -161,44 +207,78 @@ async function generateCoursePlan() {
     </div>
   );
 
-  if (completed) {
-    return (
-      <section>
-        <div className="card" style={{
-          background: 'linear-gradient(135deg, rgba(34,197,94,0.15), rgba(16,185,129,0.08))',
-          border: '1px solid rgba(34,197,94,0.3)',
-          padding: '3rem',
-          textAlign: 'center'
-        }}>
-          <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>
-            <div style={{
-              width: '80px',
-              height: '80px',
-              margin: '0 auto',
-              background: 'linear-gradient(135deg, #4ade80 0%, #22c55e 100%)',
-              borderRadius: '50%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: '2rem',
-              fontWeight: 'bold',
-              color: '#fff',
-              boxShadow: '0 8px 24px rgba(34,197,94,0.3)'
-            }}>✓</div>
-          </div>
-          <h3 style={{
-            background: 'linear-gradient(135deg, #fff 0%, #4ade80 100%)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text',
-            fontSize: '2rem',
-            marginBottom: '1rem'
-          }}>Course Completed!</h3>
-          <p className="muted" style={{ fontSize: '1.1rem' }}>Nice work — you finished this course.</p>
+ if (placementRequired) {
+  const canSubmitPlacement =
+    placementQuestions.length > 0 && placementQuestions.every((q) => !!placementAnswers[q.id]);
+
+  return (
+    <section>
+      <div className="card" style={{ padding: "1.5rem", border: "1px solid var(--border)" }}>
+        <h3 style={{ marginBottom: "0.5rem" }}>{course?.courseName || "Course"} • Placement Test</h3>
+        <div className="muted" style={{ marginBottom: "1rem" }}>
+          Answer these questions so the AI can adapt the course to your level.
         </div>
-      </section>
-    );
-  }
+
+        <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+          {placementQuestions.map((q, idx) => (
+            <div key={q.id} className="card" style={{ border: "1px solid var(--border)", padding: "1rem" }}>
+              <div style={{ fontWeight: 700, marginBottom: "0.75rem" }}>
+                Q{idx + 1}. {q.questionText}
+              </div>
+              {["A", "B", "C", "D"].map((opt) => {
+                const text =
+                  opt === "A" ? q.optionA : opt === "B" ? q.optionB : opt === "C" ? q.optionC : q.optionD;
+
+                const checked = placementAnswers[q.id] === opt;
+
+                return (
+                  <label
+                    key={opt}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      padding: "0.75rem",
+                      margin: "0.5rem 0",
+                      background: checked ? "rgba(100,108,255,0.15)" : "var(--input-bg)",
+                      border: `1px solid ${checked ? "rgba(100,108,255,0.35)" : "var(--border)"}`,
+                      borderRadius: "10px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    <input
+                      type="radio"
+                      name={`p-${q.id}`}
+                      value={opt}
+                      checked={checked}
+                      onChange={() => setPlacementAnswers((p) => ({ ...p, [q.id]: opt }))}
+                      style={{ marginRight: "0.75rem" }}
+                    />
+                    {opt}. {text}
+                  </label>
+                );
+              })}
+            </div>
+          ))}
+        </div>
+
+        <div className="actions" style={{ marginTop: "1rem" }}>
+          <button onClick={submitPlacement} disabled={!canSubmitPlacement || busy} className="btn-primary">
+            {busy ? "Submitting..." : "Submit Placement Test"}
+          </button>
+          <button onClick={loadNext} disabled={busy} className="ghost">
+            Reload
+          </button>
+        </div>
+
+        {placementResult?.score !== undefined && (
+          <div className="muted" style={{ marginTop: "1rem" }}>
+            Placement score: {placementResult.score}% • Recommended style: {placementResult.recommendedStyle}
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}
 
   return (
     <section>

@@ -175,37 +175,47 @@ export default function Courses({ search, userRole }) {
       </div>
 
       {error && (
-        <div className="card" style={{
-          background: 'linear-gradient(135deg, rgba(239,68,68,0.1), rgba(220,38,38,0.05))',
-          border: '1px solid rgba(239,68,68,0.2)',
-          padding: '1rem',
-          borderRadius: '12px',
-          marginBottom: '1rem'
-        }}>
-          <div style={{ 
-            color: '#fca5a5',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.75rem'
-          }}>
-            <div style={{
-              width: '20px',
-              height: '20px',
-              borderRadius: '50%',
-              border: '2px solid #fca5a5',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontWeight: 'bold',
-              fontSize: '0.85rem',
-              flexShrink: 0
-            }}>!</div>
+        <div
+          className="card"
+          style={{
+            background: "linear-gradient(135deg, rgba(239,68,68,0.1), rgba(220,38,38,0.05))",
+            border: "1px solid rgba(239,68,68,0.2)",
+            padding: "1rem",
+            borderRadius: "12px",
+            marginBottom: "1rem",
+          }}
+        >
+          <div
+            style={{
+              color: "#fca5a5",
+              display: "flex",
+              alignItems: "center",
+              gap: "0.75rem",
+            }}
+          >
+            <div
+              style={{
+                width: "20px",
+                height: "20px",
+                borderRadius: "50%",
+                border: "2px solid #fca5a5",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontWeight: "bold",
+                fontSize: "0.85rem",
+                flexShrink: 0,
+              }}
+            >
+              !
+            </div>
             <span>{error}</span>
           </div>
         </div>
       )}
+
       {loading && (
-        <div className="card" style={{ textAlign: 'center', padding: '2rem' }}>
+        <div className="card" style={{ textAlign: "center", padding: "2rem" }}>
           <div className="muted">Loading courses…</div>
         </div>
       )}
@@ -214,13 +224,14 @@ export default function Courses({ search, userRole }) {
         <div className="actions" style={{ marginBottom: "1rem" }}>
           <button
             style={{
-              background: showAdd ? 'rgba(255,255,255,0.05)' : 'linear-gradient(135deg, #646cff 0%, #61dafb 100%)',
-              border: showAdd ? '1px solid rgba(255,255,255,0.1)' : 'none',
-              padding: '0.75rem 1.5rem',
-              borderRadius: '10px',
-              fontWeight: '600',
-              transition: 'all 0.2s ease',
-              cursor: 'pointer'
+              background: showAdd ? "var(--input-bg)" : "linear-gradient(135deg, #646cff 0%, #61dafb 100%)",
+              border: showAdd ? "1px solid var(--border)" : "none",
+              padding: "0.75rem 1.5rem",
+              borderRadius: "10px",
+              fontWeight: "600",
+              transition: "all 0.2s ease",
+              cursor: "pointer",
+              color: "var(--text)",
             }}
             onClick={() => setShowAdd((v) => !v)}
           >
@@ -230,83 +241,93 @@ export default function Courses({ search, userRole }) {
       )}
 
       {isAdmin && showAdd && (
-        <div className="card" style={{
-          marginBottom: "1.5rem",
-          background: 'linear-gradient(135deg, rgba(100,108,255,0.1), rgba(97,218,251,0.05))',
-          border: '1px solid rgba(100,108,255,0.2)',
-          boxShadow: '0 8px 32px rgba(100,108,255,0.1)',
-          padding: '2rem'
-        }}>
+        <div
+          className="card"
+          style={{
+            marginBottom: "1.5rem",
+            background: "linear-gradient(135deg, rgba(100,108,255,0.1), rgba(97,218,251,0.05))",
+            border: "1px solid rgba(100,108,255,0.2)",
+            boxShadow: "0 8px 32px rgba(100,108,255,0.1)",
+            padding: "2rem",
+          }}
+        >
           {/* Header */}
-          <div style={{
-            textAlign: 'center',
-            marginBottom: '2rem',
-            paddingBottom: '1.5rem',
-            borderBottom: '1px solid rgba(255,255,255,0.1)'
-          }}>
-            <div style={{ 
-              width: '60px',
-              height: '60px',
-              margin: '0 auto 1rem',
-              background: 'linear-gradient(135deg, #646cff 0%, #61dafb 100%)',
-              borderRadius: '12px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: '1.5rem',
-              fontWeight: 'bold',
-              color: '#fff',
-              boxShadow: '0 4px 12px rgba(100,108,255,0.3)'
-            }}>+</div>
-            <h3 style={{
-              background: 'linear-gradient(135deg, #fff 0%, #646cff 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
-              fontSize: '1.8rem',
-              margin: '0 0 0.5rem 0'
-            }}>Create New Course</h3>
-            <p className="muted" style={{ margin: 0, fontSize: '0.95rem' }}>
+          <div
+            style={{
+              textAlign: "center",
+              marginBottom: "2rem",
+              paddingBottom: "1.5rem",
+              borderBottom: "1px solid var(--border)",
+            }}
+          >
+            <div
+              style={{
+                width: "60px",
+                height: "60px",
+                margin: "0 auto 1rem",
+                background: "linear-gradient(135deg, #646cff 0%, #61dafb 100%)",
+                borderRadius: "12px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: "1.5rem",
+                fontWeight: "bold",
+                color: "#fff",
+                boxShadow: "0 4px 12px rgba(100,108,255,0.3)",
+              }}
+            >
+              +
+            </div>
+
+            <h3
+              style={{
+                background: "linear-gradient(135deg, var(--text) 0%, #646cff 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
+                fontSize: "1.8rem",
+                margin: "0 0 0.5rem 0",
+              }}
+            >
+              Create New Course
+            </h3>
+
+            <p className="muted" style={{ margin: 0, fontSize: "0.95rem" }}>
               Fill in the details below to create an adaptive learning course
             </p>
           </div>
 
           <form onSubmit={submitAddCourse} style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
-
             {/* Basic Information Section */}
             <div>
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.5rem',
-                marginBottom: '1rem'
-              }}>
-                <div style={{
-                  width: '8px',
-                  height: '8px',
-                  borderRadius: '50%',
-                  background: '#61dafb',
-                  boxShadow: '0 0 8px rgba(97,218,251,0.6)'
-                }}></div>
-                <h4 style={{
-                  margin: 0,
-                  color: '#61dafb',
-                  fontSize: '1.1rem'
-                }}>Basic Information</h4>
+              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "1rem" }}>
+                <div
+                  style={{
+                    width: "8px",
+                    height: "8px",
+                    borderRadius: "50%",
+                    background: "#61dafb",
+                    boxShadow: "0 0 8px rgba(97,218,251,0.6)",
+                  }}
+                />
+                <h4 style={{ margin: 0, color: "#61dafb", fontSize: "1.1rem" }}>Basic Information</h4>
               </div>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
                 {/* Course Name */}
                 <div>
-                  <label style={{
-                    display: 'block',
-                    marginBottom: '0.5rem',
-                    fontSize: '0.9rem',
-                    fontWeight: '600',
-                    color: 'rgba(255,255,255,0.9)'
-                  }}>
-                    Course Name <span style={{ color: '#fca5a5' }}>*</span>
+                  <label
+                    style={{
+                      display: "block",
+                      marginBottom: "0.5rem",
+                      fontSize: "0.9rem",
+                      fontWeight: "600",
+                      color: "var(--text)",
+                    }}
+                  >
+                    Course Name <span style={{ color: "#fca5a5" }}>*</span>
                   </label>
+
                   <input
                     name="courseName"
                     placeholder="e.g., Introduction to React"
@@ -314,32 +335,35 @@ export default function Courses({ search, userRole }) {
                     onChange={onAddChange}
                     required
                     style={{
-                      width: '100%',
-                      padding: '0.85rem 1rem',
-                      borderRadius: '10px',
-                      border: '1px solid rgba(255,255,255,0.15)',
-                      background: 'rgba(255,255,255,0.05)',
-                      color: 'inherit',
-                      fontSize: '1rem',
-                      transition: 'all 0.2s ease',
-                      outline: 'none'
+                      width: "100%",
+                      padding: "0.85rem 1rem",
+                      borderRadius: "10px",
+                      border: "1px solid var(--border-strong)",
+                      background: "var(--input-bg)",
+                      color: "var(--text)",
+                      fontSize: "1rem",
+                      transition: "all 0.2s ease",
+                      outline: "none",
                     }}
-                    onFocus={(e) => e.target.style.borderColor = 'rgba(100,108,255,0.5)'}
-                    onBlur={(e) => e.target.style.borderColor = 'rgba(255,255,255,0.15)'}
+                    onFocus={(e) => (e.target.style.borderColor = "rgba(100,108,255,0.5)")}
+                    onBlur={(e) => (e.target.style.borderColor = "var(--border-strong)")}
                   />
                 </div>
 
                 {/* Subject */}
                 <div>
-                  <label style={{
-                    display: 'block',
-                    marginBottom: '0.5rem',
-                    fontSize: '0.9rem',
-                    fontWeight: '600',
-                    color: 'rgba(255,255,255,0.9)'
-                  }}>
-                    Subject <span style={{ color: '#fca5a5' }}>*</span>
+                  <label
+                    style={{
+                      display: "block",
+                      marginBottom: "0.5rem",
+                      fontSize: "0.9rem",
+                      fontWeight: "600",
+                      color: "var(--text)",
+                    }}
+                  >
+                    Subject <span style={{ color: "#fca5a5" }}>*</span>
                   </label>
+
                   <input
                     name="subject"
                     placeholder="e.g., Web Development, Data Science"
@@ -347,32 +371,35 @@ export default function Courses({ search, userRole }) {
                     onChange={onAddChange}
                     required
                     style={{
-                      width: '100%',
-                      padding: '0.85rem 1rem',
-                      borderRadius: '10px',
-                      border: '1px solid rgba(255,255,255,0.15)',
-                      background: 'rgba(255,255,255,0.05)',
-                      color: 'inherit',
-                      fontSize: '1rem',
-                      transition: 'all 0.2s ease',
-                      outline: 'none'
+                      width: "100%",
+                      padding: "0.85rem 1rem",
+                      borderRadius: "10px",
+                      border: "1px solid var(--border-strong)",
+                      background: "var(--input-bg)",
+                      color: "var(--text)",
+                      fontSize: "1rem",
+                      transition: "all 0.2s ease",
+                      outline: "none",
                     }}
-                    onFocus={(e) => e.target.style.borderColor = 'rgba(100,108,255,0.5)'}
-                    onBlur={(e) => e.target.style.borderColor = 'rgba(255,255,255,0.15)'}
+                    onFocus={(e) => (e.target.style.borderColor = "rgba(100,108,255,0.5)")}
+                    onBlur={(e) => (e.target.style.borderColor = "var(--border-strong)")}
                   />
                 </div>
 
                 {/* Description */}
                 <div>
-                  <label style={{
-                    display: 'block',
-                    marginBottom: '0.5rem',
-                    fontSize: '0.9rem',
-                    fontWeight: '600',
-                    color: 'rgba(255,255,255,0.9)'
-                  }}>
+                  <label
+                    style={{
+                      display: "block",
+                      marginBottom: "0.5rem",
+                      fontSize: "0.9rem",
+                      fontWeight: "600",
+                      color: "var(--text)",
+                    }}
+                  >
                     Description <span className="muted small">(optional)</span>
                   </label>
+
                   <textarea
                     name="description"
                     placeholder="Provide a brief description of what students will learn..."
@@ -380,21 +407,21 @@ export default function Courses({ search, userRole }) {
                     onChange={onAddChange}
                     rows={4}
                     style={{
-                      width: '100%',
-                      padding: '0.85rem 1rem',
-                      borderRadius: '10px',
-                      border: '1px solid rgba(255,255,255,0.15)',
-                      background: 'rgba(255,255,255,0.05)',
-                      color: 'inherit',
-                      fontFamily: 'inherit',
-                      fontSize: '1rem',
-                      resize: 'vertical',
-                      transition: 'all 0.2s ease',
-                      outline: 'none',
-                      lineHeight: '1.6'
+                      width: "100%",
+                      padding: "0.85rem 1rem",
+                      borderRadius: "10px",
+                      border: "1px solid var(--border-strong)",
+                      background: "var(--input-bg)",
+                      color: "var(--text)",
+                      fontFamily: "inherit",
+                      fontSize: "1rem",
+                      resize: "vertical",
+                      transition: "all 0.2s ease",
+                      outline: "none",
+                      lineHeight: "1.6",
                     }}
-                    onFocus={(e) => e.target.style.borderColor = 'rgba(100,108,255,0.5)'}
-                    onBlur={(e) => e.target.style.borderColor = 'rgba(255,255,255,0.15)'}
+                    onFocus={(e) => (e.target.style.borderColor = "rgba(100,108,255,0.5)")}
+                    onBlur={(e) => (e.target.style.borderColor = "var(--border-strong)")}
                   />
                 </div>
               </div>
@@ -402,42 +429,40 @@ export default function Courses({ search, userRole }) {
 
             {/* Course Settings Section */}
             <div>
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.5rem',
-                marginBottom: '1rem'
-              }}>
-                <div style={{
-                  width: '8px',
-                  height: '8px',
-                  borderRadius: '50%',
-                  background: '#61dafb',
-                  boxShadow: '0 0 8px rgba(97,218,251,0.6)'
-                }}></div>
-                <h4 style={{
-                  margin: 0,
-                  color: '#61dafb',
-                  fontSize: '1.1rem'
-                }}>Course Settings</h4>
+              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "1rem" }}>
+                <div
+                  style={{
+                    width: "8px",
+                    height: "8px",
+                    borderRadius: "50%",
+                    background: "#61dafb",
+                    boxShadow: "0 0 8px rgba(97,218,251,0.6)",
+                  }}
+                />
+                <h4 style={{ margin: 0, color: "#61dafb", fontSize: "1.1rem" }}>Course Settings</h4>
               </div>
 
-              <div style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-                gap: "1rem"
-              }}>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+                  gap: "1rem",
+                }}
+              >
                 {/* Duration */}
                 <div>
-                  <label style={{
-                    display: 'block',
-                    marginBottom: '0.5rem',
-                    fontSize: '0.9rem',
-                    fontWeight: '600',
-                    color: 'rgba(255,255,255,0.9)'
-                  }}>
+                  <label
+                    style={{
+                      display: "block",
+                      marginBottom: "0.5rem",
+                      fontSize: "0.9rem",
+                      fontWeight: "600",
+                      color: "var(--text)",
+                    }}
+                  >
                     Duration (minutes)
                   </label>
+
                   <input
                     name="durationMinutes"
                     type="number"
@@ -446,32 +471,35 @@ export default function Courses({ search, userRole }) {
                     value={addForm.durationMinutes}
                     onChange={onAddChange}
                     style={{
-                      width: '100%',
-                      padding: '0.85rem 1rem',
-                      borderRadius: '10px',
-                      border: '1px solid rgba(255,255,255,0.15)',
-                      background: 'rgba(255,255,255,0.05)',
-                      color: 'inherit',
-                      fontSize: '1rem',
-                      transition: 'all 0.2s ease',
-                      outline: 'none'
+                      width: "100%",
+                      padding: "0.85rem 1rem",
+                      borderRadius: "10px",
+                      border: "1px solid var(--border-strong)",
+                      background: "var(--input-bg)",
+                      color: "var(--text)",
+                      fontSize: "1rem",
+                      transition: "all 0.2s ease",
+                      outline: "none",
                     }}
-                    onFocus={(e) => e.target.style.borderColor = 'rgba(100,108,255,0.5)'}
-                    onBlur={(e) => e.target.style.borderColor = 'rgba(255,255,255,0.15)'}
+                    onFocus={(e) => (e.target.style.borderColor = "rgba(100,108,255,0.5)")}
+                    onBlur={(e) => (e.target.style.borderColor = "var(--border-strong)")}
                   />
                 </div>
 
                 {/* Pass Percentage */}
                 <div>
-                  <label style={{
-                    display: 'block',
-                    marginBottom: '0.5rem',
-                    fontSize: '0.9rem',
-                    fontWeight: '600',
-                    color: 'rgba(255,255,255,0.9)'
-                  }}>
+                  <label
+                    style={{
+                      display: "block",
+                      marginBottom: "0.5rem",
+                      fontSize: "0.9rem",
+                      fontWeight: "600",
+                      color: "var(--text)",
+                    }}
+                  >
                     Minimum Pass %
                   </label>
+
                   <input
                     name="minPassPercentage"
                     type="number"
@@ -481,94 +509,96 @@ export default function Courses({ search, userRole }) {
                     value={addForm.minPassPercentage}
                     onChange={onAddChange}
                     style={{
-                      width: '100%',
-                      padding: '0.85rem 1rem',
-                      borderRadius: '10px',
-                      border: '1px solid rgba(255,255,255,0.15)',
-                      background: 'rgba(255,255,255,0.05)',
-                      color: 'inherit',
-                      fontSize: '1rem',
-                      transition: 'all 0.2s ease',
-                      outline: 'none'
+                      width: "100%",
+                      padding: "0.85rem 1rem",
+                      borderRadius: "10px",
+                      border: "1px solid var(--border-strong)",
+                      background: "var(--input-bg)",
+                      color: "var(--text)",
+                      fontSize: "1rem",
+                      transition: "all 0.2s ease",
+                      outline: "none",
                     }}
-                    onFocus={(e) => e.target.style.borderColor = 'rgba(100,108,255,0.5)'}
-                    onBlur={(e) => e.target.style.borderColor = 'rgba(255,255,255,0.15)'}
+                    onFocus={(e) => (e.target.style.borderColor = "rgba(100,108,255,0.5)")}
+                    onBlur={(e) => (e.target.style.borderColor = "var(--border-strong)")}
                   />
                 </div>
               </div>
             </div>
 
             {/* First Unit Section */}
-            <div className="card" style={{
-              background: 'linear-gradient(135deg, rgba(97,218,251,0.1), rgba(100,108,255,0.05))',
-              border: '1px solid rgba(97,218,251,0.2)',
-              padding: '1.5rem',
-              borderRadius: '12px'
-            }}>
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.5rem',
-                marginBottom: '1rem'
-              }}>
-                <div style={{
-                  width: '8px',
-                  height: '8px',
-                  borderRadius: '50%',
-                  background: '#61dafb',
-                  boxShadow: '0 0 8px rgba(97,218,251,0.6)'
-                }}></div>
-                <h4 style={{
-                  margin: 0,
-                  color: '#61dafb',
-                  fontSize: '1.1rem'
-                }}>First Unit</h4>
+            <div
+              className="card"
+              style={{
+                background: "linear-gradient(135deg, rgba(97,218,251,0.1), rgba(100,108,255,0.05))",
+                border: "1px solid rgba(97,218,251,0.2)",
+                padding: "1.5rem",
+                borderRadius: "12px",
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "1rem" }}>
+                <div
+                  style={{
+                    width: "8px",
+                    height: "8px",
+                    borderRadius: "50%",
+                    background: "#61dafb",
+                    boxShadow: "0 0 8px rgba(97,218,251,0.6)",
+                  }}
+                />
+                <h4 style={{ margin: 0, color: "#61dafb", fontSize: "1.1rem" }}>First Unit</h4>
               </div>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
                 {/* Unit Title */}
                 <div>
-                  <label style={{
-                    display: 'block',
-                    marginBottom: '0.5rem',
-                    fontSize: '0.9rem',
-                    fontWeight: '600',
-                    color: 'rgba(255,255,255,0.9)'
-                  }}>
+                  <label
+                    style={{
+                      display: "block",
+                      marginBottom: "0.5rem",
+                      fontSize: "0.9rem",
+                      fontWeight: "600",
+                      color: "var(--text)",
+                    }}
+                  >
                     Unit Title
                   </label>
+
                   <input
                     name="unitTitle"
                     placeholder="e.g., Getting Started with Components"
                     value={addForm.unitTitle}
                     onChange={onAddChange}
                     style={{
-                      width: '100%',
-                      padding: '0.85rem 1rem',
-                      borderRadius: '10px',
-                      border: '1px solid rgba(255,255,255,0.15)',
-                      background: 'rgba(255,255,255,0.05)',
-                      color: 'inherit',
-                      fontSize: '1rem',
-                      transition: 'all 0.2s ease',
-                      outline: 'none'
+                      width: "100%",
+                      padding: "0.85rem 1rem",
+                      borderRadius: "10px",
+                      border: "1px solid var(--border-strong)",
+                      background: "var(--input-bg)",
+                      color: "var(--text)",
+                      fontSize: "1rem",
+                      transition: "all 0.2s ease",
+                      outline: "none",
                     }}
-                    onFocus={(e) => e.target.style.borderColor = 'rgba(97,218,251,0.5)'}
-                    onBlur={(e) => e.target.style.borderColor = 'rgba(255,255,255,0.15)'}
+                    onFocus={(e) => (e.target.style.borderColor = "rgba(97,218,251,0.5)")}
+                    onBlur={(e) => (e.target.style.borderColor = "var(--border-strong)")}
                   />
                 </div>
 
                 {/* Unit Content */}
                 <div>
-                  <label style={{
-                    display: 'block',
-                    marginBottom: '0.5rem',
-                    fontSize: '0.9rem',
-                    fontWeight: '600',
-                    color: 'rgba(255,255,255,0.9)'
-                  }}>
+                  <label
+                    style={{
+                      display: "block",
+                      marginBottom: "0.5rem",
+                      fontSize: "0.9rem",
+                      fontWeight: "600",
+                      color: "var(--text)",
+                    }}
+                  >
                     Unit Content
                   </label>
+
                   <textarea
                     name="unitContent"
                     placeholder="Enter the base content for this unit. This will be used by the AI to generate adaptive lessons..."
@@ -576,89 +606,95 @@ export default function Courses({ search, userRole }) {
                     onChange={onAddChange}
                     rows={6}
                     style={{
-                      width: '100%',
-                      padding: '0.85rem 1rem',
-                      borderRadius: '10px',
-                      border: '1px solid rgba(255,255,255,0.15)',
-                      background: 'rgba(255,255,255,0.05)',
-                      color: 'inherit',
-                      fontFamily: 'inherit',
-                      fontSize: '1rem',
-                      resize: 'vertical',
-                      transition: 'all 0.2s ease',
-                      outline: 'none',
-                      lineHeight: '1.6'
+                      width: "100%",
+                      padding: "0.85rem 1rem",
+                      borderRadius: "10px",
+                      border: "1px solid var(--border-strong)",
+                      background: "var(--input-bg)",
+                      color: "var(--text)",
+                      fontFamily: "inherit",
+                      fontSize: "1rem",
+                      resize: "vertical",
+                      transition: "all 0.2s ease",
+                      outline: "none",
+                      lineHeight: "1.6",
                     }}
-                    onFocus={(e) => e.target.style.borderColor = 'rgba(97,218,251,0.5)'}
-                    onBlur={(e) => e.target.style.borderColor = 'rgba(255,255,255,0.15)'}
+                    onFocus={(e) => (e.target.style.borderColor = "rgba(97,218,251,0.5)")}
+                    onBlur={(e) => (e.target.style.borderColor = "var(--border-strong)")}
                   />
                 </div>
 
                 {/* Info Box */}
-                <div style={{
-                  background: 'rgba(97,218,251,0.1)',
-                  border: '1px solid rgba(97,218,251,0.2)',
-                  borderRadius: '8px',
-                  padding: '0.75rem 1rem',
-                  display: 'flex',
-                  gap: '0.75rem',
-                  alignItems: 'flex-start'
-                }}>
-                  <div style={{
-                    width: '24px',
-                    height: '24px',
-                    borderRadius: '50%',
-                    background: 'rgba(97,218,251,0.2)',
-                    border: '2px solid rgba(97,218,251,0.4)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: '0.75rem',
-                    fontWeight: 'bold',
-                    color: '#61dafb',
-                    flexShrink: 0
-                  }}>i</div>
-                  <div className="muted small" style={{ lineHeight: '1.5' }}>
-                    This is the foundational content for your first unit. The adaptive learning system will use this to generate personalized lessons, flashcards, and quizzes based on each student's learning style and performance.
+                <div
+                  style={{
+                    background: "rgba(97,218,251,0.1)",
+                    border: "1px solid rgba(97,218,251,0.2)",
+                    borderRadius: "8px",
+                    padding: "0.75rem 1rem",
+                    display: "flex",
+                    gap: "0.75rem",
+                    alignItems: "flex-start",
+                  }}
+                >
+                  <div
+                    style={{
+                      width: "24px",
+                      height: "24px",
+                      borderRadius: "50%",
+                      background: "rgba(97,218,251,0.2)",
+                      border: "2px solid rgba(97,218,251,0.4)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: "0.75rem",
+                      fontWeight: "bold",
+                      color: "#61dafb",
+                      flexShrink: 0,
+                    }}
+                  >
+                    i
+                  </div>
+
+                  <div className="muted small" style={{ lineHeight: "1.5" }}>
+                    This is the foundational content for your first unit. The adaptive learning system will use this to
+                    generate personalized lessons, flashcards, and quizzes based on each student's learning style and
+                    performance.
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Submit Button */}
-            <div style={{
-              display: 'flex',
-              gap: '1rem',
-              paddingTop: '1rem',
-              borderTop: '1px solid rgba(255,255,255,0.1)'
-            }}>
+            <div style={{ display: "flex", gap: "1rem", paddingTop: "1rem", borderTop: "1px solid var(--border)" }}>
               <button
                 type="submit"
                 disabled={busyId === "add"}
                 style={{
                   flex: 1,
-                  background: busyId === "add" ? 'rgba(255,255,255,0.05)' : 'linear-gradient(135deg, #646cff 0%, #61dafb 100%)',
-                  border: 'none',
-                  padding: '1rem 2rem',
-                  borderRadius: '12px',
-                  fontWeight: '600',
-                  fontSize: '1.05rem',
-                  cursor: busyId === "add" ? 'not-allowed' : 'pointer',
+                  background:
+                    busyId === "add" ? "var(--input-bg)" : "linear-gradient(135deg, #646cff 0%, #61dafb 100%)",
+                  border: "none",
+                  padding: "1rem 2rem",
+                  borderRadius: "12px",
+                  fontWeight: "600",
+                  fontSize: "1.05rem",
+                  cursor: busyId === "add" ? "not-allowed" : "pointer",
                   opacity: busyId === "add" ? 0.6 : 1,
-                  transition: 'all 0.3s ease',
-                  boxShadow: busyId === "add" ? 'none' : '0 4px 16px rgba(100,108,255,0.3)',
-                  transform: busyId === "add" ? 'none' : 'translateY(0)',
+                  transition: "all 0.3s ease",
+                  boxShadow: busyId === "add" ? "none" : "0 4px 16px rgba(100,108,255,0.3)",
+                  transform: "translateY(0)",
+                  color: "var(--text)",
                 }}
                 onMouseEnter={(e) => {
                   if (busyId !== "add") {
-                    e.target.style.transform = 'translateY(-2px)';
-                    e.target.style.boxShadow = '0 6px 24px rgba(100,108,255,0.4)';
+                    e.target.style.transform = "translateY(-2px)";
+                    e.target.style.boxShadow = "0 6px 24px rgba(100,108,255,0.4)";
                   }
                 }}
                 onMouseLeave={(e) => {
                   if (busyId !== "add") {
-                    e.target.style.transform = 'translateY(0)';
-                    e.target.style.boxShadow = '0 4px 16px rgba(100,108,255,0.3)';
+                    e.target.style.transform = "translateY(0)";
+                    e.target.style.boxShadow = "0 4px 16px rgba(100,108,255,0.3)";
                   }
                 }}
               >
@@ -671,70 +707,75 @@ export default function Courses({ search, userRole }) {
 
       <div className="courses-grid">
         {filtered.map((c) => (
-          <article key={c.courseId} className="course-card" style={{
-            background: 'linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01))',
-            border: '1px solid rgba(255,255,255,0.05)',
-            transition: 'all 0.3s ease'
-          }}>
+          <article
+            key={c.courseId}
+            className="course-card"
+            style={{
+              background: "var(--card-grad)",
+              border: "1px solid var(--border)",
+              transition: "all 0.3s ease",
+            }}
+          >
             <div className="course-meta">
-              <div className="course-title" style={{
-                background: 'linear-gradient(135deg, #fff 0%, #646cff 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
-                fontSize: '1.1rem'
-              }}>{c.courseName}</div>
-              <div className="muted small" style={{ marginTop: '0.5rem', display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-                <span style={{
-                  background: 'rgba(100,108,255,0.15)',
-                  padding: '0.25rem 0.75rem',
-                  borderRadius: '6px',
-                  fontSize: '0.8rem'
-                }}>{c.subject}</span>
-                <span style={{
-                  background: 'rgba(97,218,251,0.15)',
-                  padding: '0.25rem 0.75rem',
-                  borderRadius: '6px',
-                  fontSize: '0.8rem'
-                }}>{formatDurationMinutes(c.durationMinutes)}</span>
-                <span style={{
-                  background: 'rgba(34,197,94,0.15)',
-                  padding: '0.25rem 0.75rem',
-                  borderRadius: '6px',
-                  fontSize: '0.8rem'
-                }}>Pass: {c.minPassPercentage}%</span>
+              <div
+                className="course-title"
+                style={{
+                  background: "linear-gradient(135deg, var(--text) 0%, #646cff 100%)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  backgroundClip: "text",
+                  fontSize: "1.1rem",
+                }}
+              >
+                {c.courseName}
+              </div>
+
+              <div className="muted small" style={{ marginTop: "0.5rem", display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
+                <span style={{ background: "rgba(100,108,255,0.15)", padding: "0.25rem 0.75rem", borderRadius: "6px", fontSize: "0.8rem" }}>
+                  {c.subject}
+                </span>
+                <span style={{ background: "rgba(97,218,251,0.15)", padding: "0.25rem 0.75rem", borderRadius: "6px", fontSize: "0.8rem" }}>
+                  {formatDurationMinutes(c.durationMinutes)}
+                </span>
+                <span style={{ background: "rgba(34,197,94,0.15)", padding: "0.25rem 0.75rem", borderRadius: "6px", fontSize: "0.8rem" }}>
+                  Pass: {c.minPassPercentage}%
+                </span>
               </div>
             </div>
 
             <div className="course-actions">
               {isAdmin ? (
                 <button
+                  type="button"
                   onClick={() => viewEnrollments(c)}
                   disabled={enrollmentsLoading && selectedCourse?.courseId === c.courseId}
                   style={{
-                    background: 'linear-gradient(135deg, #646cff 0%, #61dafb 100%)',
-                    border: 'none',
-                    padding: '0.65rem 1.25rem',
-                    borderRadius: '8px',
-                    fontWeight: '600',
-                    cursor: (enrollmentsLoading && selectedCourse?.courseId === c.courseId) ? 'not-allowed' : 'pointer',
-                    opacity: (enrollmentsLoading && selectedCourse?.courseId === c.courseId) ? 0.6 : 1
+                    background: "linear-gradient(135deg, #646cff 0%, #61dafb 100%)",
+                    border: "none",
+                    padding: "0.65rem 1.25rem",
+                    borderRadius: "8px",
+                    fontWeight: "600",
+                    cursor: enrollmentsLoading && selectedCourse?.courseId === c.courseId ? "not-allowed" : "pointer",
+                    opacity: enrollmentsLoading && selectedCourse?.courseId === c.courseId ? 0.6 : 1,
+                    color: "#fff",
                   }}
                 >
                   {enrollmentsLoading && selectedCourse?.courseId === c.courseId ? "Loading..." : "View Students"}
                 </button>
               ) : (
                 <button
+                  type="button"
                   onClick={() => startCourse(c)}
                   disabled={busyId === c.courseId}
                   style={{
-                    background: 'linear-gradient(135deg, #646cff 0%, #61dafb 100%)',
-                    border: 'none',
-                    padding: '0.65rem 1.25rem',
-                    borderRadius: '8px',
-                    fontWeight: '600',
-                    cursor: busyId === c.courseId ? 'not-allowed' : 'pointer',
-                    opacity: busyId === c.courseId ? 0.6 : 1
+                    background: "linear-gradient(135deg, #646cff 0%, #61dafb 100%)",
+                    border: "none",
+                    padding: "0.65rem 1.25rem",
+                    borderRadius: "8px",
+                    fontWeight: "600",
+                    cursor: busyId === c.courseId ? "not-allowed" : "pointer",
+                    opacity: busyId === c.courseId ? 0.6 : 1,
+                    color: "#fff",
                   }}
                 >
                   {busyId === c.courseId ? "Starting..." : "Start Course"}
@@ -747,120 +788,139 @@ export default function Courses({ search, userRole }) {
       </div>
 
       {isAdmin && selectedCourse && (
-        <div className="card" style={{
-          marginTop: "1rem",
-          background: 'linear-gradient(135deg, rgba(100,108,255,0.06), rgba(97,218,251,0.03))',
-          border: '1px solid rgba(100,108,255,0.12)'
-        }}>
-          <h4 style={{
-            background: 'linear-gradient(135deg, #fff 0%, #646cff 100%)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text',
-            marginBottom: '1.5rem'
-          }}>
+        <div
+          className="card"
+          style={{
+            marginTop: "1rem",
+            background: "linear-gradient(135deg, rgba(100,108,255,0.06), rgba(97,218,251,0.03))",
+            border: "1px solid rgba(100,108,255,0.12)",
+          }}
+        >
+          <h4
+            style={{
+              background: "linear-gradient(135deg, var(--text) 0%, #646cff 100%)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              backgroundClip: "text",
+              marginBottom: "1.5rem",
+            }}
+          >
             Enrolled Students: {selectedCourse.courseName}
           </h4>
-          <div className="muted small" style={{ marginBottom: '1rem' }}>Course ID: {selectedCourse.courseId}</div>
+
+          <div className="muted small" style={{ marginBottom: "1rem" }}>
+            Course ID: {selectedCourse.courseId}
+          </div>
 
           {enrollmentsError && (
-            <div style={{
-              background: 'rgba(239,68,68,0.1)',
-              border: '1px solid rgba(239,68,68,0.2)',
-              padding: '0.75rem',
-              borderRadius: '8px',
-              color: '#fca5a5'
-            }}>
-              <div style={{
-                width: '18px',
-                height: '18px',
-                borderRadius: '50%',
-                border: '2px solid #fca5a5',
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontWeight: 'bold',
-                fontSize: '0.75rem',
-                marginRight: '0.5rem'
-              }}>!</div>
+            <div
+              style={{
+                background: "rgba(239,68,68,0.1)",
+                border: "1px solid rgba(239,68,68,0.2)",
+                padding: "0.75rem",
+                borderRadius: "8px",
+                color: "#fca5a5",
+              }}
+            >
+              <div
+                style={{
+                  width: "18px",
+                  height: "18px",
+                  borderRadius: "50%",
+                  border: "2px solid #fca5a5",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontWeight: "bold",
+                  fontSize: "0.75rem",
+                  marginRight: "0.5rem",
+                }}
+              >
+                !
+              </div>
               {enrollmentsError}
             </div>
           )}
-          {enrollmentsLoading && (
-            <div className="muted" style={{ textAlign: 'center', padding: '1rem' }}>Loading enrollments…</div>
-          )}
+
+          {enrollmentsLoading && <div className="muted" style={{ textAlign: "center", padding: "1rem" }}>Loading enrollments…</div>}
 
           {!enrollmentsLoading && enrolledStudents.length === 0 && (
-            <div className="muted" style={{ textAlign: 'center', padding: '2rem' }}>No enrollments yet.</div>
+            <div className="muted" style={{ textAlign: "center", padding: "2rem" }}>
+              No enrollments yet.
+            </div>
           )}
 
           {!enrollmentsLoading && enrolledStudents.length > 0 && (
             <div style={{ overflowX: "auto" }}>
-              <table style={{
-                width: "100%",
-                borderCollapse: "collapse",
-                background: 'rgba(255,255,255,0.02)',
-                borderRadius: '8px',
-                overflow: 'hidden'
-              }}>
+              <table
+                style={{
+                  width: "100%",
+                  borderCollapse: "collapse",
+                  background: "var(--input-bg)",
+                  borderRadius: "8px",
+                  overflow: "hidden",
+                  border: "1px solid var(--border)",
+                }}
+              >
                 <thead>
-                  <tr style={{ background: 'rgba(100,108,255,0.1)' }}>
-                    <th style={{ textAlign: "left", padding: "0.75rem", fontWeight: '600' }}>Name</th>
-                    <th style={{ textAlign: "left", padding: "0.75rem", fontWeight: '600' }}>Email</th>
-                    <th style={{ textAlign: "left", padding: "0.75rem", fontWeight: '600' }}>Level</th>
-                    <th style={{ textAlign: "left", padding: "0.75rem", fontWeight: '600' }}>Learning Style</th>
-                    <th style={{ textAlign: "left", padding: "0.75rem", fontWeight: '600' }}>Competence</th>
-                    <th style={{ textAlign: "left", padding: "0.75rem", fontWeight: '600' }}>Last Quiz</th>
-                    <th style={{ textAlign: "left", padding: "0.75rem", fontWeight: '600' }}>Unit</th>
-                    <th style={{ textAlign: "left", padding: "0.75rem", fontWeight: '600' }}>Status</th>
+                  <tr style={{ background: "rgba(100,108,255,0.1)" }}>
+                    <th style={{ textAlign: "left", padding: "0.75rem", fontWeight: "600" }}>Name</th>
+                    <th style={{ textAlign: "left", padding: "0.75rem", fontWeight: "600" }}>Email</th>
+                    <th style={{ textAlign: "left", padding: "0.75rem", fontWeight: "600" }}>Level</th>
+                    <th style={{ textAlign: "left", padding: "0.75rem", fontWeight: "600" }}>Learning Style</th>
+                    <th style={{ textAlign: "left", padding: "0.75rem", fontWeight: "600" }}>Competence</th>
+                    <th style={{ textAlign: "left", padding: "0.75rem", fontWeight: "600" }}>Last Quiz</th>
+                    <th style={{ textAlign: "left", padding: "0.75rem", fontWeight: "600" }}>Unit</th>
+                    <th style={{ textAlign: "left", padding: "0.75rem", fontWeight: "600" }}>Status</th>
                   </tr>
                 </thead>
+
                 <tbody>
                   {enrolledStudents.map((s, idx) => (
                     <tr
                       key={s.enrollmentId}
                       style={{
-                        borderTop: '1px solid rgba(255,255,255,0.05)',
-                        background: idx % 2 === 0 ? 'rgba(255,255,255,0.01)' : 'transparent'
+                        borderTop: "1px solid var(--border)",
+                        background: idx % 2 === 0 ? "var(--surface-2)" : "transparent",
                       }}
                     >
                       <td style={{ padding: "0.75rem" }}>{s.user?.name || "—"}</td>
-                      <td style={{ padding: "0.75rem", color: 'rgba(255,255,255,0.7)' }}>{s.user?.email || "—"}</td>
+                      <td style={{ padding: "0.75rem", color: "var(--muted)" }}>{s.user?.email || "—"}</td>
+
                       <td style={{ padding: "0.75rem" }}>
-                        <span style={{
-                          background: 'rgba(100,108,255,0.15)',
-                          padding: '0.25rem 0.5rem',
-                          borderRadius: '4px',
-                          fontSize: '0.85rem'
-                        }}>{s.user?.profile?.currentLevel || "—"}</span>
+                        <span style={{ background: "rgba(100,108,255,0.15)", padding: "0.25rem 0.5rem", borderRadius: "4px", fontSize: "0.85rem" }}>
+                          {s.user?.profile?.currentLevel || "—"}
+                        </span>
                       </td>
+
                       <td style={{ padding: "0.75rem" }}>{s.user?.profile?.learningStyle || "—"}</td>
+
                       <td style={{ padding: "0.75rem" }}>
-                        <span style={{
-                          background: 'rgba(34,197,94,0.15)',
-                          padding: '0.25rem 0.5rem',
-                          borderRadius: '4px',
-                          fontSize: '0.85rem',
-                          color: '#4ade80'
-                        }}>{s.user?.profile?.lastCompetencyScore ?? "—"}</span>
+                        <span style={{ background: "rgba(34,197,94,0.15)", padding: "0.25rem 0.5rem", borderRadius: "4px", fontSize: "0.85rem", color: "#4ade80" }}>
+                          {s.user?.profile?.lastCompetencyScore ?? "—"}
+                        </span>
                       </td>
+
                       <td style={{ padding: "0.75rem" }}>
-                        <span style={{
-                          background: (s.lastQuizScore ?? 0) >= 60 ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)',
-                          padding: '0.25rem 0.5rem',
-                          borderRadius: '4px',
-                          fontSize: '0.85rem',
-                          color: (s.lastQuizScore ?? 0) >= 60 ? '#4ade80' : '#fca5a5'
-                        }}>{s.lastQuizScore ?? "—"}%</span>
+                        <span
+                          style={{
+                            background: (s.lastQuizScore ?? 0) >= 60 ? "rgba(34,197,94,0.15)" : "rgba(239,68,68,0.15)",
+                            padding: "0.25rem 0.5rem",
+                            borderRadius: "4px",
+                            fontSize: "0.85rem",
+                            color: (s.lastQuizScore ?? 0) >= 60 ? "#4ade80" : "#fca5a5",
+                          }}
+                        >
+                          {s.lastQuizScore ?? "—"}%
+                        </span>
                       </td>
+
                       <td style={{ padding: "0.75rem" }}>{s.currentUnitOrder ?? "—"}</td>
+
                       <td style={{ padding: "0.75rem" }}>
-                        <span style={{
-                          background: s.status === 'completed' ? 'rgba(34,197,94,0.15)' : 'rgba(97,218,251,0.15)',
-                          padding: '0.25rem 0.5rem',
-                          borderRadius: '4px',
-                          fontSize: '0.85rem'
-                        }}>{s.status || "active"}</span>
+                        <span style={{ background: s.status === "completed" ? "rgba(34,197,94,0.15)" : "rgba(97,218,251,0.15)", padding: "0.25rem 0.5rem", borderRadius: "4px", fontSize: "0.85rem" }}>
+                          {s.status || "active"}
+                        </span>
                       </td>
                     </tr>
                   ))}

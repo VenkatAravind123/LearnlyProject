@@ -21,13 +21,13 @@ import CourseLearn from "./pages/CourseLearn";
 import Users from "./pages/Users";
 import Schedule from "./pages/Schedule";
 
-function AppLayout({ children, search, setSearch, userRole,user }) {
+function AppLayout({ children, search, setSearch, userRole,user ,theme,onToggleTheme}) {
   return (
     <div className="app-root">
       
       <Sidebar userRole={userRole} user={user}/>
       <div className="main-area">
-        <Header search={search} setSearch={setSearch} user={user}/>
+        <Header search={search} setSearch={setSearch} user={user} theme={theme} onToggleTheme={onToggleTheme} />
         <main className="content">{children}</main>
       </div>
     </div>
@@ -40,7 +40,15 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const isLoggedIn = !!user;
   const userRole = user?.role || 'student';
+  //theme state
+  const [theme , setTheme] = useState(() => (localStorage.getItem("theme") || "light"))
 
+   useEffect(() => {
+       document.documentElement.dataset.theme = theme; // sets <html data-theme="...">
+       localStorage.setItem("theme", theme);
+     }, [theme]);
+
+     const onToggleTheme = () => setTheme(t => (t === "light" ? "dark" : "light"));
   useEffect(() => {
     fetch("http://localhost:5000/api/users/protected", {
       credentials: "include",
@@ -120,7 +128,8 @@ export default function App() {
         <Route
           path="/dashboard"
           element={requireAuth(
-            <AppLayout search={search} setSearch={setSearch} userRole={userRole} user={user}>
+            <AppLayout search={search} setSearch={setSearch} userRole={userRole} user={user} theme={theme}
+     onToggleTheme={onToggleTheme}>
               {userRole === 'admin' ? <AdminDashboard user={user}/> : <Dashboard user={user}/>}
             </AppLayout>
           )}
@@ -129,7 +138,8 @@ export default function App() {
         <Route
           path="/users"
           element={requireAuth(
-            <AppLayout search={search} setSearch={setSearch} userRole={userRole} user={user}>
+            <AppLayout search={search} setSearch={setSearch} userRole={userRole} user={user} theme={theme}
+     onToggleTheme={onToggleTheme}>
               <Users search={search} userRole={userRole}/>
             </AppLayout>,
             ['admin']
@@ -139,7 +149,8 @@ export default function App() {
         <Route
           path="/courses"
           element={requireAuth(
-            <AppLayout search={search} setSearch={setSearch} userRole={userRole} user={user}>
+            <AppLayout search={search} setSearch={setSearch} userRole={userRole} user={user} theme={theme}
+     onToggleTheme={onToggleTheme}>
               <Courses search={search} userRole={userRole}/>
             </AppLayout>,
             ['student', 'admin']
@@ -148,7 +159,8 @@ export default function App() {
         <Route
           path="/courses/:courseId"
           element={requireAuth(
-            <AppLayout search={search} setSearch={setSearch} userRole={userRole} user={user}>
+            <AppLayout search={search} setSearch={setSearch} userRole={userRole} user={user} theme={theme}
+     onToggleTheme={onToggleTheme}>
               <CourseLearn />
             </AppLayout>,
             ['student', 'admin']
@@ -158,7 +170,8 @@ export default function App() {
         <Route
           path="/learning-path"
           element={requireAuth(
-            <AppLayout search={search} setSearch={setSearch} userRole={userRole} user={user}>
+            <AppLayout search={search} setSearch={setSearch} userRole={userRole} user={user} theme={theme}
+     onToggleTheme={onToggleTheme}>
               <LearningPath />
             </AppLayout>,
             ['student']
@@ -168,7 +181,8 @@ export default function App() {
         <Route
           path="/lesson/:id"
           element={requireAuth(
-            <AppLayout search={search} setSearch={setSearch} userRole={userRole} user={user}>
+            <AppLayout search={search} setSearch={setSearch} userRole={userRole} user={user} theme={theme}
+     onToggleTheme={onToggleTheme}>
               <Lesson />
             </AppLayout>,
             ['student']
@@ -178,7 +192,8 @@ export default function App() {
         <Route
           path="/practice"
           element={requireAuth(
-            <AppLayout search={search} setSearch={setSearch} userRole={userRole} user={user}>
+            <AppLayout search={search} setSearch={setSearch} userRole={userRole} user={user} theme={theme}
+     onToggleTheme={onToggleTheme}>
               <Practice />
             </AppLayout>,
             ['student']
@@ -188,7 +203,8 @@ export default function App() {
         <Route
           path="/progress"
           element={requireAuth(
-            <AppLayout search={search} setSearch={setSearch} userRole={userRole}  user={user}>
+            <AppLayout search={search} setSearch={setSearch} userRole={userRole}  user={user} theme={theme}
+     onToggleTheme={onToggleTheme}>
               <Progress />
             </AppLayout>,
             ['student']
@@ -198,7 +214,8 @@ export default function App() {
         <Route
           path="/assistant"
           element={requireAuth(
-            <AppLayout search={search} setSearch={setSearch} userRole={userRole} user={user}>
+            <AppLayout search={search} setSearch={setSearch} userRole={userRole} user={user} theme={theme}
+     onToggleTheme={onToggleTheme}>
               <Assistant />
             </AppLayout>,
             ['student']
@@ -207,7 +224,8 @@ export default function App() {
         <Route
   path="/schedule"
   element={requireAuth(
-    <AppLayout search={search} setSearch={setSearch} userRole={userRole} user={user}>
+    <AppLayout search={search} setSearch={setSearch} userRole={userRole} user={user} theme={theme}
+     onToggleTheme={onToggleTheme}>
       <Schedule />
     </AppLayout>,
     ["student"]
@@ -217,7 +235,8 @@ export default function App() {
         <Route
           path="/profile"
           element={requireAuth(
-            <AppLayout search={search} setSearch={setSearch} userRole={userRole}  user={user}>
+            <AppLayout search={search} setSearch={setSearch} userRole={userRole}  user={user} theme={theme}
+     onToggleTheme={onToggleTheme}>
               <Profile user={user} onLogout={handleLogout} />
             </AppLayout>
           )}

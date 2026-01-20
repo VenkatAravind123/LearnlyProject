@@ -17,5 +17,7 @@ router.post("/:courseId/units/:unitId/quiz/submit", authMiddleware, courseContro
 
 router.get("/:courseId/enrollments", authMiddleware, requireRole("admin"), courseController.getEnrollments);
 
+router.get("/:courseId/placement", authMiddleware, courseController.getPlacementTest);
+router.post("/:courseId/placement/submit", authMiddleware, courseController.submitPlacementTest);
 
 module.exports = router;

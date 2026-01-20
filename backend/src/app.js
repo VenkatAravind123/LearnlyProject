@@ -17,6 +17,10 @@ require("./models/CourseUnitQuizAttempt")
 //Learning Plan Models
 require("./models/LearningPlan")
 require("./models/LearningPlanTask")
+//Course Placement Models
+require("./models/CoursePlacementQuestion");
+require("./models/CoursePlacementAttempt");
+require("./models/CoursePlacementAnswer");
 
 
 const app = express();

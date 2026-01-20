@@ -5,6 +5,9 @@ const CourseUnitQuizQuestion = require("../models/CourseUnitQuizQuestion");
 const CourseUnitQuizAttempt = require("../models/CourseUnitQuizAttempt");
 const StudentProfile = require("../models/StudentProfile");
 const User = require("../models/User");
+const CoursePlacementQuestion = require("../models/CoursePlacementQuestion");
+const CoursePlacementAttempt = require("../models/CoursePlacementAttempt");
+const CoursePlacementAnswer = require("../models/CoursePlacementAnswer");
 
 const { generateAIQuestions } = require("../services/aiQuestionService");
 const { generateUnitExplanation, generateFlashcards, chooseDifficulty } = require("../services/courseAgentService");
@@ -159,10 +162,37 @@ exports.getNextUnit = async (req, res) => {
     const userId = req.user.userId;
 
     const enrollment = await CourseEnrollment.findOne({ where: { userId, courseId } });
-    if (!enrollment) return res.status(400).json({ error: "Not enrolled" });
+if (!enrollment) return res.status(400).json({ error: "Not enrolled" });
 
-    const course = await Course.findByPk(courseId);
-    if (!course) return res.status(404).json({ error: "Course not found" });
+const course = await Course.findByPk(courseId);
+if (!course) return res.status(404).json({ error: "Course not found" });
+
+if (!enrollment.placementCompletedAt) {
+  const qs = await ensurePlacementQuestions(course);
+  return res.json({
+    placementRequired: true,
+    course: {
+      courseId: course.courseId,
+      courseName: course.courseName,
+      subject: course.subject,
+      durationMinutes: course.durationMinutes,
+      minPassPercentage: course.minPassPercentage,
+    },
+    placementQuestions: qs.map((q) => ({
+      id: q.id,
+      questionText: q.questionText,
+      optionA: q.optionA,
+      optionB: q.optionB,
+      optionC: q.optionC,
+      optionD: q.optionD,
+    })),
+  });
+}
+
+// IMPORTANT: delete the later duplicate:
+// const course = await Course.findByPk(courseId);
+
+    
 
     const unit = await CourseUnit.findOne({ where: { courseId, order: enrollment.currentUnitOrder } });
     if (!unit) {
@@ -172,7 +202,8 @@ exports.getNextUnit = async (req, res) => {
     }
 
     const profile = await StudentProfile.findOne({ where: { userId } });
-    const competenceScore = Number(profile?.lastCompetencyScore || 0);
+    // const competenceScore = Number(profile?.lastCompetencyScore || 0);
+    const competenceScore = Number(enrollment.placementScore ?? profile?.lastCompetencyScore ?? 0);
 
     const explanation = await generateUnitExplanation({
       subject: course.subject,
@@ -429,6 +460,164 @@ exports.getMyEnrollments = async (req, res) => {
     return res.json({ enrollments: items });
   } catch (e) {
     console.error("getMyEnrollments error:", e);
+    return res.status(500).json({ error: e.message });
+  }
+};
+
+
+async function ensurePlacementQuestions(course) {
+  const existing = await CoursePlacementQuestion.findAll({
+    where: { courseId: course.courseId },
+    order: [["createdAt", "ASC"]],
+  });
+
+  if (existing.length >= 5) return existing;
+
+  // Generate a mixed-difficulty set to estimate level
+  const topic = `${course.courseName} placement test`;
+  const generated = [
+    ...(await generateAIQuestions({ subject: course.subject, topic, difficultyLevel: "easy", count: 2 })),
+    ...(await generateAIQuestions({ subject: course.subject, topic, difficultyLevel: "medium", count: 2 })),
+    ...(await generateAIQuestions({ subject: course.subject, topic, difficultyLevel: "hard", count: 1 })),
+  ];
+
+  await CoursePlacementQuestion.destroy({ where: { courseId: course.courseId } });
+
+  const saved = await CoursePlacementQuestion.bulkCreate(
+    generated.map((q, idx) => ({
+      courseId: course.courseId,
+      questionText: q.questionText,
+      optionA: q.optionA,
+      optionB: q.optionB,
+      optionC: q.optionC,
+      optionD: q.optionD,
+      correctOption: q.correctOption,
+      explanation: q.explanation || "",
+      difficulty: idx < 2 ? "easy" : idx < 4 ? "medium" : "hard",
+    }))
+  );
+
+  return saved;
+}
+
+function scoreToRecommendedStyle(score, profileStyle) {
+  if (score < 40) return "Practice";
+  return profileStyle || "Text";
+}
+
+exports.getPlacementTest = async (req, res) => {
+  try {
+    const courseId = Number(req.params.courseId);
+    const userId = req.user.userId;
+
+    const course = await Course.findByPk(courseId);
+    if (!course) return res.status(404).json({ error: "Course not found" });
+
+    const enrollment = await CourseEnrollment.findOne({ where: { userId, courseId } });
+    if (!enrollment) return res.status(400).json({ error: "Not enrolled" });
+
+    if (enrollment.placementCompletedAt) {
+      return res.json({
+        completed: true,
+        placementScore: enrollment.placementScore ?? 0,
+        placementCompletedAt: enrollment.placementCompletedAt,
+      });
+    }
+
+    const qs = await ensurePlacementQuestions(course);
+
+    return res.json({
+      completed: false,
+      questions: qs.map((q) => ({
+        id: q.id,
+        questionText: q.questionText,
+        optionA: q.optionA,
+        optionB: q.optionB,
+        optionC: q.optionC,
+        optionD: q.optionD,
+      })),
+    });
+  } catch (e) {
+    console.error("getPlacementTest error:", e);
+    return res.status(500).json({ error: e.message });
+  }
+};
+
+exports.submitPlacementTest = async (req, res) => {
+  try {
+    const courseId = Number(req.params.courseId);
+    const userId = req.user.userId;
+    const { answers } = req.body || {};
+
+    if (!Array.isArray(answers) || answers.length === 0) return res.status(400).json({ error: "answers required" });
+
+    const course = await Course.findByPk(courseId);
+    if (!course) return res.status(404).json({ error: "Course not found" });
+
+    const enrollment = await CourseEnrollment.findOne({ where: { userId, courseId } });
+    if (!enrollment) return res.status(400).json({ error: "Not enrolled" });
+
+    if (enrollment.placementCompletedAt) {
+      return res.json({
+        alreadyCompleted: true,
+        placementScore: enrollment.placementScore ?? 0,
+      });
+    }
+
+    const questionIds = answers.map((a) => Number(a.questionId)).filter(Boolean);
+    const questions = await CoursePlacementQuestion.findAll({ where: { id: questionIds, courseId } });
+    const byId = new Map(questions.map((q) => [q.id, q]));
+
+    let correct = 0;
+    const normalized = answers
+      .map((a) => {
+        const q = byId.get(Number(a.questionId));
+        if (!q) return null;
+
+        const selected = String(a.selectedOption || "").toUpperCase();
+        if (!["A", "B", "C", "D"].includes(selected)) return null;
+
+        const isCorrect = selected === q.correctOption;
+        if (isCorrect) correct += 1;
+
+        return { questionId: q.id, selectedOption: selected, isCorrect };
+      })
+      .filter(Boolean);
+
+    if (normalized.length === 0) return res.status(400).json({ error: "No valid answers found" });
+
+    const score = Math.round((correct / normalized.length) * 100);
+
+    const attempt = await CoursePlacementAttempt.create({
+      enrollmentId: enrollment.id,
+      courseId,
+      score,
+      completedAt: new Date(),
+    });
+
+    await CoursePlacementAnswer.bulkCreate(
+      normalized.map((a) => ({
+        attemptId: attempt.id,
+        questionId: a.questionId,
+        selectedOption: a.selectedOption,
+        isCorrect: a.isCorrect,
+      }))
+    );
+
+    const profile = await StudentProfile.findOne({ where: { userId } });
+    const recommendedStyle = scoreToRecommendedStyle(score, profile?.learningStyle);
+
+    enrollment.placementScore = score;
+    enrollment.placementCompletedAt = new Date();
+    enrollment.recommendedStyle = recommendedStyle;
+    await enrollment.save();
+
+    return res.json({
+      score,
+      recommendedStyle,
+    });
+  } catch (e) {
+    console.error("submitPlacementTest error:", e);
     return res.status(500).json({ error: e.message });
   }
 };
