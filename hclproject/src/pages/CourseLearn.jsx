@@ -183,29 +183,26 @@ async function generateCoursePlan() {
     </div>
   );
 
-  if (error) return (
-    <div className="card" style={{
-      background: 'linear-gradient(135deg, rgba(239,68,68,0.1), rgba(220,38,38,0.05))',
-      border: '1px solid rgba(239,68,68,0.2)',
-      padding: '2rem',
-      textAlign: 'center'
-    }}>
-      <div style={{ color: '#fca5a5', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-        <div style={{
-          width: '18px',
-          height: '18px',
-          borderRadius: '50%',
-          border: '2px solid #fca5a5',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontWeight: 'bold',
-          fontSize: '0.75rem'
-        }}>!</div>
-        {error}
+  if (completed) {
+  return (
+    <section>
+      <div className="card" style={{ textAlign: "center", padding: "2rem" }}>
+        <h3>Course Completed</h3>
+        <p className="muted" style={{ marginTop: "0.5rem" }}>
+          You’ve finished all available units for this course.
+        </p>
+        <div className="actions" style={{ justifyContent: "center", marginTop: "1rem" }}>
+          <button className="btn-primary" onClick={() => navigate("/courses")}>
+            Browse Courses
+          </button>
+          <button className="ghost" onClick={() => navigate(`/schedule?courseId=${courseId}`)}>
+            View Plan
+          </button>
+        </div>
       </div>
-    </div>
+    </section>
   );
+}
 
  if (placementRequired) {
   const canSubmitPlacement =
@@ -214,7 +211,7 @@ async function generateCoursePlan() {
   return (
     <section>
       <div className="card" style={{ padding: "1.5rem", border: "1px solid var(--border)" }}>
-        <h3 style={{ marginBottom: "0.5rem" }}>{course?.courseName || "Course"} • Placement Test</h3>
+        <h3 style={{ marginBottom: "0.5rem" }}>{course?.courseName || "Course"} • Competence Test</h3>
         <div className="muted" style={{ marginBottom: "1rem" }}>
           Answer these questions so the AI can adapt the course to your level.
         </div>

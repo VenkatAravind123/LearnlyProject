@@ -137,4 +137,58 @@ Return ONLY a JSON array of 6 items:
   return arr;
 }
 
-module.exports = { generateUnitExplanation, generateFlashcards, chooseDifficulty, chooseStyle };
+async function generateRemainingUnits({
+  subject,
+  courseName,
+  courseDescription,
+  existingUnitTitles,
+  competenceScore,
+  count,
+}) {
+  if (!count || count <= 0) return [];
+
+  const level = scoreToLevel(Number(competenceScore || 0));
+
+  const prompt = `
+You are designing a course outline.
+
+Course:
+- Name: ${courseName}
+- Subject: ${subject}
+- Description: ${courseDescription || "(none)"}
+
+Student level (from competence test): ${level}
+
+Existing unit titles (do not repeat):
+${(existingUnitTitles || []).map((t) => `- ${t}`).join("\n")}
+
+Task:
+Generate exactly ${count} NEW units continuing the course.
+
+Return ONLY a JSON array like:
+[
+  { "title": "string", "baseContent": "string" }
+]
+
+Rules:
+- No markdown.
+- Do not include "Unit 2:" prefixes in the title.
+- baseContent should be concise (bullets or short paragraphs) and good enough for AI lesson generation later.
+`.trim();
+
+  const raw = await ollamaChatJSON(prompt);
+  const arr = extractJson(raw);
+
+  if (!Array.isArray(arr)) throw new Error("Unit generation did not return an array.");
+
+  const cleaned = arr
+    .map((u) => ({
+      title: String(u?.title || "").trim(),
+      baseContent: String(u?.baseContent || "").trim(),
+    }))
+    .filter((u) => u.title.length >= 3);
+
+  return cleaned.slice(0, count);
+}
+
+module.exports = { generateUnitExplanation, generateFlashcards, chooseDifficulty, chooseStyle, generateRemainingUnits };

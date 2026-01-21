@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { FiBookOpen, FiUsers, FiTrendingUp, FiCheckCircle, FiSearch, FiClock, FiTarget } from "react-icons/fi";
 
 const API_BASE = "http://localhost:5000";
 
@@ -11,6 +12,23 @@ function formatDurationMinutes(mins) {
   const m = n % 60;
   return m ? `${h}h ${m}m` : `${h}h`;
 }
+function clampPct(v) {
+  const n = Number(v);
+  if (!Number.isFinite(n)) return 0;
+  return Math.max(0, Math.min(100, n));
+}
+
+function deriveCourseLevel(course) {
+  const pass = Number(course?.minPassPercentage ?? 0);
+  if (pass >= 75) return "advanced";
+  if (pass >= 60) return "intermediate";
+  return "beginner";
+}
+
+function courseLevelLabel(course) {
+  const lvl = deriveCourseLevel(course);
+  return lvl.charAt(0).toUpperCase() + lvl.slice(1);
+}
 
 export default function Courses({ search, userRole }) {
   const navigate = useNavigate();
@@ -21,7 +39,16 @@ export default function Courses({ search, userRole }) {
   const [busyId, setBusyId] = useState(null);
   const [error, setError] = useState("");
 
-  // Admin UI state
+
+  // Admin UI state  // Student dashboard UI state
+  const [localSearch, setLocalSearch] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("all");
+  const [levelFilter, setLevelFilter] = useState("all");
+
+  const [myEnrollments, setMyEnrollments] = useState([]);
+  const [enrollmentByCourseId, setEnrollmentByCourseId] = useState({});
+  const [outlineByCourseId, setOutlineByCourseId] = useState({});
+  const [myLoading, setMyLoading] = useState(false);
   const [showAdd, setShowAdd] = useState(false);
   const [addForm, setAddForm] = useState({
     courseName: "",
@@ -52,22 +79,114 @@ export default function Courses({ search, userRole }) {
       setLoading(false);
     }
   }
+    async function loadMyEnrollments() {
+    if (isAdmin) return;
+    try {
+      setMyLoading(true);
+      const res = await fetch(`${API_BASE}/api/courses/my/enrollments`, { credentials: "include" });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.error || "Failed to load enrollments");
 
-  useEffect(() => {
-    loadCourses();
+      const items = Array.isArray(data?.enrollments) ? data.enrollments : [];
+      setMyEnrollments(items);
+
+      const map = {};
+      for (const e of items) {
+        const courseId = e?.course?.courseId;
+        if (courseId) map[courseId] = e;
+      }
+      setEnrollmentByCourseId(map);
+    } catch (e) {
+      // don't hard-fail the page if enrollments can't load
+      console.warn(e);
+    } finally {
+      setMyLoading(false);
+    }
+  }
+
+  async function loadOutline(courseId) {
+    const res = await fetch(`${API_BASE}/api/courses/${courseId}/outline`, { credentials: "include" });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data?.error || "Failed to load outline");
+
+    const units = Array.isArray(data?.units) ? data.units : [];
+    const total = units.length || 0;
+    const completed = units.filter((u) => u.status === "completed").length;
+    const pct = total ? Math.round((completed / total) * 100) : 0;
+
+    return { totalUnits: total, completedUnits: completed, progressPercent: clampPct(pct) };
+  }
+
+  // useEffect(() => {
+  //   loadCourses();
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, []);
+
+    useEffect(() => {
+    (async () => {
+      await loadCourses();
+      await loadMyEnrollments();
+    })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+    useEffect(() => {
+    if (isAdmin) return;
+
+    const ids = Object.keys(enrollmentByCourseId).map((x) => Number(x)).filter(Boolean);
+    const missing = ids.filter((id) => !outlineByCourseId[id]);
+
+    if (missing.length === 0) return;
+
+    (async () => {
+      const results = await Promise.allSettled(missing.map((id) => loadOutline(id).then((o) => [id, o])));
+      const next = { ...outlineByCourseId };
+
+      for (const r of results) {
+        if (r.status === "fulfilled") {
+          const [id, o] = r.value;
+          next[id] = o;
+        }
+      }
+      setOutlineByCourseId(next);
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAdmin, enrollmentByCourseId]);
+
+
+  // const filtered = useMemo(() => {
+  //   const q = (search || "").trim().toLowerCase();
+  //   if (!q) return courses;
+  //   return courses.filter((c) => {
+  //     const name = String(c.courseName || "").toLowerCase();
+  //     const subject = String(c.subject || "").toLowerCase();
+  //     return name.includes(q) || subject.includes(q);
+  //   });
+  // }, [search, courses]);
+
+    const categories = useMemo(() => {
+    const s = new Set();
+    for (const c of courses) {
+      const subj = String(c?.subject || "").trim();
+      if (subj) s.add(subj);
+    }
+    return ["all", ...Array.from(s).sort((a, b) => a.localeCompare(b))];
+  }, [courses]);
+
   const filtered = useMemo(() => {
-    const q = (search || "").trim().toLowerCase();
-    if (!q) return courses;
+    const q = (localSearch || search || "").trim().toLowerCase();
+
     return courses.filter((c) => {
       const name = String(c.courseName || "").toLowerCase();
       const subject = String(c.subject || "").toLowerCase();
-      return name.includes(q) || subject.includes(q);
-    });
-  }, [search, courses]);
 
+      const matchesText = !q || name.includes(q) || subject.includes(q);
+      const matchesCategory = categoryFilter === "all" || String(c.subject || "") === categoryFilter;
+      const matchesLevel = levelFilter === "all" || deriveCourseLevel(c) === levelFilter;
+
+      return matchesText && matchesCategory && matchesLevel;
+    });
+  }, [localSearch, search, courses, categoryFilter, levelFilter]);
   async function startCourse(course) {
     try {
       setBusyId(course.courseId);
@@ -705,7 +824,7 @@ export default function Courses({ search, userRole }) {
         </div>
       )}
 
-      <div className="courses-grid">
+      {/* <div className="courses-grid">
         {filtered.map((c) => (
           <article
             key={c.courseId}
@@ -785,7 +904,235 @@ export default function Courses({ search, userRole }) {
           </article>
         ))}
         {!loading && filtered.length === 0 && <div className="muted">No courses found.</div>}
-      </div>
+      </div> */}
+
+            {isAdmin ? (
+        <div className="courses-grid">
+          {filtered.map((c) => (
+            <article
+              key={c.courseId}
+              className="course-card"
+              style={{
+                background: "var(--card-grad)",
+                border: "1px solid var(--border)",
+                transition: "all 0.3s ease",
+              }}
+            >
+              <div className="course-meta">
+                <div
+                  className="course-title"
+                  style={{
+                    background: "linear-gradient(135deg, var(--text) 0%, #646cff 100%)",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                    backgroundClip: "text",
+                    fontSize: "1.1rem",
+                  }}
+                >
+                  {c.courseName}
+                </div>
+
+                <div
+                  className="muted small"
+                  style={{ marginTop: "0.5rem", display: "flex", gap: "0.75rem", flexWrap: "wrap" }}
+                >
+                  <span
+                    style={{
+                      background: "rgba(100,108,255,0.15)",
+                      padding: "0.25rem 0.75rem",
+                      borderRadius: "6px",
+                      fontSize: "0.8rem",
+                    }}
+                  >
+                    {c.subject}
+                  </span>
+                  <span
+                    style={{
+                      background: "rgba(97,218,251,0.15)",
+                      padding: "0.25rem 0.75rem",
+                      borderRadius: "6px",
+                      fontSize: "0.8rem",
+                    }}
+                  >
+                    {formatDurationMinutes(c.durationMinutes)}
+                  </span>
+                  <span
+                    style={{
+                      background: "rgba(34,197,94,0.15)",
+                      padding: "0.25rem 0.75rem",
+                      borderRadius: "6px",
+                      fontSize: "0.8rem",
+                    }}
+                  >
+                    Pass: {c.minPassPercentage}%
+                  </span>
+                </div>
+              </div>
+
+              <div className="course-actions">
+                <button
+                  type="button"
+                  onClick={() => viewEnrollments(c)}
+                  disabled={enrollmentsLoading && selectedCourse?.courseId === c.courseId}
+                  style={{
+                    background: "linear-gradient(135deg, #646cff 0%, #61dafb 100%)",
+                    border: "none",
+                    padding: "0.65rem 1.25rem",
+                    borderRadius: "8px",
+                    fontWeight: "600",
+                    cursor: enrollmentsLoading && selectedCourse?.courseId === c.courseId ? "not-allowed" : "pointer",
+                    opacity: enrollmentsLoading && selectedCourse?.courseId === c.courseId ? 0.6 : 1,
+                    color: "#fff",
+                  }}
+                >
+                  {enrollmentsLoading && selectedCourse?.courseId === c.courseId ? "Loading..." : "View Students"}
+                </button>
+              </div>
+            </article>
+          ))}
+          {!loading && filtered.length === 0 && <div className="muted">No courses found.</div>}
+        </div>
+      ) : (
+        <>
+          {/* Stats */}
+          <div className="course-stats-grid">
+            <div className="stat-card">
+              <div className="stat-icon"><FiBookOpen /></div>
+              <div>
+                <div className="stat-label">Total Courses</div>
+                <div className="stat-value">{courses.length}</div>
+              </div>
+            </div>
+
+            <div className="stat-card">
+              <div className="stat-icon"><FiUsers /></div>
+              <div>
+                <div className="stat-label">Enrolled</div>
+                <div className="stat-value">{myEnrollments.length}</div>
+              </div>
+            </div>
+
+            <div className="stat-card">
+              <div className="stat-icon"><FiTrendingUp /></div>
+              <div>
+                <div className="stat-label">In Progress</div>
+                <div className="stat-value">
+                  {myEnrollments.filter((e) => {
+                    if (e.status === "completed") return false;
+                    const cid = e?.course?.courseId;
+                    const pct = outlineByCourseId[cid]?.progressPercent;
+                    if (Number.isFinite(pct)) return pct > 0 && pct < 100;
+                    return Number(e.currentUnitOrder || 1) > 1;
+                  }).length}
+                </div>
+              </div>
+            </div>
+
+            <div className="stat-card">
+              <div className="stat-icon"><FiCheckCircle /></div>
+              <div>
+                <div className="stat-label">Completed</div>
+                <div className="stat-value">{myEnrollments.filter((e) => e.status === "completed").length}</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Search + filters */}
+          <div className="courses-toolbar">
+            <div className="toolbar-input">
+              <FiSearch className="toolbar-icon" />
+              <input
+                value={localSearch}
+                onChange={(e) => setLocalSearch(e.target.value)}
+                placeholder="Search courses..."
+              />
+            </div>
+
+            <select className="toolbar-select" value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)}>
+              {categories.map((c) => (
+                <option key={c} value={c}>
+                  {c === "all" ? "All Categories" : c}
+                </option>
+              ))}
+            </select>
+
+            <select className="toolbar-select" value={levelFilter} onChange={(e) => setLevelFilter(e.target.value)}>
+              <option value="all">All Levels</option>
+              <option value="beginner">Beginner</option>
+              <option value="intermediate">Intermediate</option>
+              <option value="advanced">Advanced</option>
+            </select>
+          </div>
+
+          {/* Cards */}
+          <div className="course-cards-grid">
+            {filtered.map((c) => {
+              const enrolled = Boolean(enrollmentByCourseId[c.courseId]);
+              const outline = outlineByCourseId[c.courseId];
+              const pct = enrolled ? (outline?.progressPercent ?? 0) : null;
+
+              return (
+                <article key={c.courseId} className="course-card-v2">
+                  <div className="course-card-v2__media">
+                    <div className="badges">
+                      {enrolled && <span className="badge badge--enrolled">Enrolled</span>}
+                      <span className="badge badge--ai">AI Course</span>
+                    </div>
+
+                    <span className="level-chip">{courseLevelLabel(c)}</span>
+                  </div>
+
+                  <div className="course-card-v2__body">
+                    <div className="course-card-v2__title">{c.courseName}</div>
+                    <div className="course-card-v2__desc">{c.description || "Learn with adaptive lessons and quizzes."}</div>
+
+                    <div className="course-meta-row">
+                      <span className="meta-pill"><FiClock /> {formatDurationMinutes(c.durationMinutes)}</span>
+                      <span className="meta-pill"><FiTarget /> Pass {c.minPassPercentage}%</span>
+                      <span className="meta-pill">{c.subject}</span>
+                    </div>
+
+                    {enrolled && (
+                      <div className="course-progress">
+                        <div className="course-progress__top">
+                          <span>Progress</span>
+                          <span className="muted">{pct}%</span>
+                        </div>
+                        <div className="progress-bar" style={{ ["--pct"]: `${pct}%` }}>
+                          <div className="progress-bar__fill" />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="course-card-v2__footer">
+                    {enrolled ? (
+                      <button
+                        type="button"
+                        className="btn-primary"
+                        onClick={() => navigate(`/courses/${c.courseId}`)}
+                      >
+                        Continue Learning
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        className="btn-primary"
+                        onClick={() => startCourse(c)}
+                        disabled={busyId === c.courseId}
+                      >
+                        {busyId === c.courseId ? "Enrolling..." : "Enroll Now"}
+                      </button>
+                    )}
+                  </div>
+                </article>
+              );
+            })}
+
+            {!loading && !myLoading && filtered.length === 0 && <div className="muted">No courses found.</div>}
+          </div>
+        </>
+      )}
 
       {isAdmin && selectedCourse && (
         <div

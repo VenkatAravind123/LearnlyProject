@@ -10,11 +10,53 @@ const CoursePlacementAttempt = require("../models/CoursePlacementAttempt");
 const CoursePlacementAnswer = require("../models/CoursePlacementAnswer");
 
 const { generateAIQuestions } = require("../services/aiQuestionService");
-const { generateUnitExplanation, generateFlashcards, chooseDifficulty } = require("../services/courseAgentService");
+const { generateUnitExplanation, generateFlashcards, chooseDifficulty, generateRemainingUnits } =
+  require("../services/courseAgentService");
 
 function toInt(v, fallback) {
   const n = Number(v);
   return Number.isFinite(n) ? n : fallback;
+}
+function desiredUnitCount(course) {
+  const dur = Number(course?.durationMinutes || 0);
+  if (!dur) return 6;
+  return Math.max(4, Math.min(12, Math.round(dur / 30)));
+}
+
+async function ensureCourseHasEnoughUnits({ course, competenceScore }) {
+  const existing = await CourseUnit.findAll({
+    where: { courseId: course.courseId },
+    order: [["order", "ASC"]],
+  });
+
+  const targetTotal = desiredUnitCount(course);
+  if (existing.length >= targetTotal) return { created: 0, total: existing.length };
+
+  const missing = targetTotal - existing.length;
+
+  const newUnits = await generateRemainingUnits({
+    subject: course.subject,
+    courseName: course.courseName,
+    courseDescription: course.description,
+    existingUnitTitles: existing.map((u) => u.title),
+    competenceScore,
+    count: missing,
+  });
+
+  if (!newUnits.length) return { created: 0, total: existing.length };
+
+  const startOrder = existing.length + 1;
+
+  await CourseUnit.bulkCreate(
+    newUnits.map((u, idx) => ({
+      courseId: course.courseId,
+      order: startOrder + idx,
+      title: u.title,
+      baseContent: u.baseContent,
+    }))
+  );
+
+  return { created: newUnits.length, total: existing.length + newUnits.length };
 }
 
 exports.getCourseOutline = async (req, res) => {
@@ -194,12 +236,50 @@ if (!enrollment.placementCompletedAt) {
 
     
 
-    const unit = await CourseUnit.findOne({ where: { courseId, order: enrollment.currentUnitOrder } });
-    if (!unit) {
-      enrollment.status = "completed";
-      await enrollment.save();
-      return res.json({ message: "Course completed", completed: true });
-    }
+    let unit = await CourseUnit.findOne({ where: { courseId, order: enrollment.currentUnitOrder } });
+
+if (!unit) {
+  // Safety net: try generating remaining units (e.g., if course initially had only Unit 1)
+  const competenceScore = Number(enrollment.placementScore ?? 0);
+  try {
+    await ensureCourseHasEnoughUnits({ course, competenceScore });
+    unit = await CourseUnit.findOne({ where: { courseId, order: enrollment.currentUnitOrder } });
+  } catch (genErr) {
+    console.error("Unit generation during /next failed:", genErr);
+  }
+}
+
+// if (!unit) {
+//   enrollment.status = "completed";
+//   await enrollment.save();
+//   return res.json({ message: "Course completed", completed: true });
+// }
+if (!unit) {
+  const competenceScore = Number(enrollment.placementScore ?? 0);
+
+  try {
+    await ensureCourseHasEnoughUnits({ course, competenceScore });
+    unit = await CourseUnit.findOne({ where: { courseId, order: enrollment.currentUnitOrder } });
+  } catch (genErr) {
+    console.error("Unit generation during /next failed:", genErr);
+    return res.status(503).json({
+      error: "AI is generating your next unit. Please try again in a few seconds.",
+    });
+  }
+}
+
+if (!unit) {
+  const maxOrder = await CourseUnit.max("order", { where: { courseId } });
+  if (maxOrder && enrollment.currentUnitOrder > maxOrder) {
+    enrollment.status = "completed";
+    await enrollment.save();
+    return res.json({ message: "Course completed", completed: true });
+  }
+
+  return res.status(400).json({
+    error: "No unit found for your progress. Course units may be missing.",
+  });
+}
 
     const profile = await StudentProfile.findOne({ where: { userId } });
     // const competenceScore = Number(profile?.lastCompetencyScore || 0);
@@ -611,7 +691,13 @@ exports.submitPlacementTest = async (req, res) => {
     enrollment.placementCompletedAt = new Date();
     enrollment.recommendedStyle = recommendedStyle;
     await enrollment.save();
-
+// If the course only has Unit 1, auto-generate the remaining units now
+try {
+  await ensureCourseHasEnoughUnits({ course, competenceScore: score });
+} catch (genErr) {
+  console.error("Unit auto-generation failed:", genErr);
+  // Don’t fail placement submission; student can still proceed with Unit 1.
+}
     return res.json({
       score,
       recommendedStyle,

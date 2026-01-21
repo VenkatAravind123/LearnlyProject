@@ -8,7 +8,47 @@ const Course = require("../models/Course");
 const CourseUnit = require("../models/CourseUnit");
 
 const { todayLocalISO, addDaysLocalISO } = require("../services/learningPlanAgentService");
+function desiredUnitCount(course) {
+  const dur = Number(course?.durationMinutes || 0);
+  if (!dur) return 6;
+  return Math.max(4, Math.min(12, Math.round(dur / 30)));
+}
 
+async function ensureCourseHasEnoughUnits({ course, competenceScore }) {
+  const existing = await CourseUnit.findAll({
+    where: { courseId: course.courseId },
+    order: [["order", "ASC"]],
+  });
+
+  const targetTotal = desiredUnitCount(course);
+  if (existing.length >= targetTotal) return { created: 0, total: existing.length };
+
+  const missing = targetTotal - existing.length;
+
+  const newUnits = await generateRemainingUnits({
+    subject: course.subject,
+    courseName: course.courseName,
+    courseDescription: course.description,
+    existingUnitTitles: existing.map((u) => u.title),
+    competenceScore,
+    count: missing,
+  });
+
+  if (!newUnits.length) return { created: 0, total: existing.length };
+
+  const startOrder = existing.length + 1;
+
+  await CourseUnit.bulkCreate(
+    newUnits.map((u, idx) => ({
+      courseId: course.courseId,
+      order: startOrder + idx,
+      title: u.title,
+      baseContent: u.baseContent,
+    }))
+  );
+
+  return { created: newUnits.length, total: existing.length + newUnits.length };
+}
 function toInt(v, fallback) {
   const n = Number(v);
   return Number.isFinite(n) ? Math.round(n) : fallback;

@@ -12,7 +12,7 @@ import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Lesson from "./pages/Lesson";
-import Practice from "./pages/Practice";
+import SkillTracker from "./pages/SkillTracker";
 import Progress from "./pages/Progress";
 import Assistant from "./pages/Assistant";
 import CompleteProfile from "./pages/CompleteProfile"; // <-- Import the new page
@@ -190,11 +190,11 @@ export default function App() {
         />
         
         <Route
-          path="/practice"
+          path="/skilltracker"
           element={requireAuth(
             <AppLayout search={search} setSearch={setSearch} userRole={userRole} user={user} theme={theme}
      onToggleTheme={onToggleTheme}>
-              <Practice />
+              <SkillTracker />
             </AppLayout>,
             ['student']
           )}

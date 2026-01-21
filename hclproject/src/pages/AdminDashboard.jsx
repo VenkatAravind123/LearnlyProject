@@ -27,7 +27,6 @@ export default function AdminDashboard() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-
           // Add Authorization header if needed
         },
         credentials: "include",
