@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-
+import completeProfile from '../assets/completeprofile.jpg'
 export default function CompleteProfile() {
   const [form, setForm] = useState({
     currentLevel: "Beginner",
@@ -41,7 +41,7 @@ export default function CompleteProfile() {
             {error && <div style={{ color: "#ff6b6b" }}>{error}</div>}
             <label>
               Current Level
-              <select name="currentLevel" value={form.currentLevel} onChange={handleChange}>
+              <select name="currentLevel" value={form.currentLevel} onChange={handleChange} style={{backgroundColor:"black"}}>
                 <option value="Beginner">Beginner</option>
                 <option value="Intermediate">Intermediate</option>
                 <option value="Advanced">Advanced</option>
@@ -59,7 +59,7 @@ export default function CompleteProfile() {
             </label>
             <label>
               Learning Style
-              <select name="learningStyle" value={form.learningStyle} onChange={handleChange}>
+              <select name="learningStyle" value={form.learningStyle} onChange={handleChange} style={{backgroundColor:"black"}}>
                 <option value="Visual">Visual</option>
                 <option value="Text">Text</option>
                 <option value="Practice">Practice</option>
@@ -70,6 +70,7 @@ export default function CompleteProfile() {
             </button>
           </form>
         </div>
+        <img src={completeProfile} alt="Complete Profile" style={{ width: "500px", height: "500px" }}/>
       </div>
     </div>
   );

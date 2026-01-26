@@ -45,7 +45,7 @@ export default function Header({ search, setSearch, user, theme, onToggleTheme }
     <header className="header">
       <div className="header-left">
         <h2 className="page-title">{pageTitle}</h2>
-        <div className="header-sub">Personalized suggestions to meet your goals</div>
+        <div className="header-sub" style={{color: theme === "dark" ? "white" : "black"}}>Personalized suggestions to meet your goals</div>
       </div>
 
       <div className="header-right" ref={menuRef}>

@@ -20,6 +20,8 @@ import CompetenceTest from "./pages/CompetenceTest";
 import CourseLearn from "./pages/CourseLearn";
 import Users from "./pages/Users";
 import Schedule from "./pages/Schedule";
+import CourseOverview from "./pages/CourseOverview";
+
 
 function AppLayout({ children, search, setSearch, userRole,user ,theme,onToggleTheme}) {
   return (
@@ -210,6 +212,15 @@ export default function App() {
             ['student']
           )}
         />
+        <Route
+  path="/courses/:courseId/overview"
+  element={requireAuth(
+    <AppLayout search={search} setSearch={setSearch} userRole={userRole} user={user} theme={theme} onToggleTheme={onToggleTheme}>
+      <CourseOverview />
+    </AppLayout>,
+    ["student", "admin"]
+  )}
+/>
         
         <Route
           path="/assistant"

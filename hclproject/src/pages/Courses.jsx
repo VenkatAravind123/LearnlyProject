@@ -1115,12 +1115,13 @@ export default function Courses({ search, userRole }) {
                         Continue Learning
                       </button>
                     ) : (
-                      <button
-                        type="button"
-                        className="btn-primary"
-                        onClick={() => startCourse(c)}
-                        disabled={busyId === c.courseId}
-                      >
+                      // <button
+                      //   type="button"
+                      //   className="btn-primary"
+                      //   onClick={() => startCourse(c)}
+                      //   disabled={busyId === c.courseId}
+                      // >
+                      <button onClick={() => navigate(`/courses/${c.courseId}/overview`)}>
                         {busyId === c.courseId ? "Enrolling..." : "Enroll Now"}
                       </button>
                     )}

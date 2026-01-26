@@ -182,6 +182,93 @@ function buildCourseScheduleTasks({ planId, courseId, units, startUnitOrder, day
 
   return tasks;
 }
+async function buildGlobalScheduleTasks({ planId, userId, days, dailyMinutes, preferredTime }) {
+  const tasksPerDay = dailyMinutes <= 35 ? 1 : 2;
+  const startTime = startTimeFor(preferredTime);
+
+  const enrollments = await CourseEnrollment.findAll({
+    where: { userId },
+    include: [{ model: Course }],
+    order: [["updatedAt", "DESC"]],
+  });
+
+  if (!enrollments.length) {
+    // fallback: still not great, but user has no enrollments
+    return Array.from({ length: days }).map((_, i) => ({
+      planId,
+      courseId: null,
+      date: addDaysLocalISO(todayLocalISO(), i),
+      startTime,
+      durationMin: dailyMinutes,
+      title: "STUDY: Review fundamentals",
+      type: "study",
+      status: "pending",
+    }));
+  }
+
+  // prefetch "next unit" info per enrollment
+  const focusItems = [];
+  for (const e of enrollments) {
+    const courseId = e.courseId;
+    const courseName = e.Course?.courseName || "Course";
+    const currentUnitOrder = e.currentUnitOrder || 1;
+
+    const unit = await CourseUnit.findOne({
+      where: { courseId, order: currentUnitOrder },
+    });
+
+    focusItems.push({
+      courseId,
+      courseName,
+      unitId: unit?.id || null,
+      unitOrder: unit?.order || null,
+      unitTitle: unit?.title || null,
+    });
+  }
+
+  const tasks = [];
+  let cursor = 0;
+
+  for (let dayIndex = 0; dayIndex < days; dayIndex++) {
+    const date = addDaysLocalISO(todayLocalISO(), dayIndex);
+
+    for (let slot = 0; slot < tasksPerDay; slot++) {
+      const item = focusItems[cursor % focusItems.length];
+      cursor++;
+
+      const type =
+        tasksPerDay === 2 ? (slot === 0 ? "study" : "quiz") : ["study", "practice", "quiz", "review"][dayIndex % 4];
+
+      const studyMin = tasksPerDay === 2 ? Math.max(20, Math.floor(dailyMinutes * 0.65)) : dailyMinutes;
+      const durationMin = tasksPerDay === 2 ? (slot === 0 ? studyMin : Math.max(10, dailyMinutes - studyMin)) : dailyMinutes;
+
+      const unitPart = item.unitTitle
+        ? `Unit ${item.unitOrder}: ${item.unitTitle}`
+        : "Next unit";
+
+      const title =
+        type === "study" ? `STUDY: ${item.courseName} — ${unitPart}` :
+        type === "quiz" ? `QUIZ: ${item.courseName} — ${unitPart}` :
+        type === "practice" ? `PRACTICE: ${item.courseName} — ${unitPart} (exercises)` :
+        `REVIEW: ${item.courseName} — key points + flashcards`;
+
+      tasks.push({
+        planId,
+        courseId: item.courseId,
+        unitId: item.unitId,
+        unitOrder: item.unitOrder,
+        date,
+        startTime,
+        durationMin,
+        title,
+        type,
+        status: "pending",
+      });
+    }
+  }
+
+  return tasks;
+}
 
 exports.generatePlan = async (req, res) => {
   try {
@@ -232,17 +319,15 @@ exports.generatePlan = async (req, res) => {
         status: "active",
       });
 
-      const tasksToCreate = buildCourseScheduleTasks({
-        planId: plan.id,
-        courseId,
-        units,
-        startUnitOrder: enrollment.currentUnitOrder || 1,
-        days,
-        dailyMinutes,
-        preferredTime,
-      });
+      const tasksToCreate = await buildGlobalScheduleTasks({
+  planId: plan.id,
+  userId,
+  days,
+  dailyMinutes,
+  preferredTime,
+});
 
-      await LearningPlanTask.bulkCreate(tasksToCreate);
+await LearningPlanTask.bulkCreate(tasksToCreate);
 
       const tasks = await LearningPlanTask.findAll({
         where: { planId: plan.id },

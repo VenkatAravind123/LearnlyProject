@@ -1207,9 +1207,9 @@
   padding: 0;
 }
 
-.btn-primary.full {
+/* .btn-primary.full {
   width: 100%;
-}
+} */
 
 .auth-divider {
   display: flex;
@@ -2712,7 +2712,7 @@
 }
 
 .btn-primary {
-  width: 100%;
+  
   background: linear-gradient(135deg, #646cff 0%, #61dafb 100%);
   border: none;
   color: #fff;

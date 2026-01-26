@@ -175,13 +175,23 @@ exports.enroll = async (req, res) => {
     const courseId = Number(req.params.courseId);
     const userId = req.user.userId;
 
+    const { beginner } = req.body || {}; // <--- ADD
+
     const course = await Course.findByPk(courseId);
     if (!course) return res.status(404).json({ error: "Course not found" });
 
     const profile = await StudentProfile.findOne({ where: { userId } });
 
     const existing = await CourseEnrollment.findOne({ where: { userId, courseId } });
-    if (existing) return res.json({ message: "Already enrolled", enrollment: existing });
+    if (existing) {
+      // Optional: if user now says they are beginner, allow skipping placement
+      if (beginner && !existing.placementCompletedAt) {
+        existing.placementScore = 0;
+        existing.placementCompletedAt = new Date();
+        await existing.save();
+      }
+      return res.json({ message: "Already enrolled", enrollment: existing });
+    }
 
     const enrollment = await CourseEnrollment.create({
       userId,
@@ -189,6 +199,8 @@ exports.enroll = async (req, res) => {
       currentUnitOrder: 1,
       lastQuizScore: 0,
       recommendedStyle: profile?.learningStyle || "Text",
+      placementScore: beginner ? 0 : null,                    // <--- ADD
+      placementCompletedAt: beginner ? new Date() : null,     // <--- ADD
     });
 
     return res.status(201).json({ message: "Enrolled", enrollment });

@@ -137,7 +137,7 @@ setNextTask(data.nextTask || null);
     <section>
       <div className="section-header">
         <h3>Schedule</h3>
-        <p className="muted">Generate a plan for a specific course and track unit progress.</p>
+        <p className="muted" >Generate a plan for a specific course and track unit progress.</p>
       </div>
 
       <div className="card" style={{ marginBottom: "1rem" }}>
