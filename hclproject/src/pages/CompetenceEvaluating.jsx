@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import Loader from "../components/Loader";
 
 export default function CompetenceEvaluating() {
   const navigate = useNavigate();
@@ -15,7 +16,9 @@ export default function CompetenceEvaluating() {
         <p className="pill">Evaluating</p>
         <h2>Evaluating your competence level…</h2>
         <p className="muted">This may take a few seconds while the AI analyzes your answers.</p>
-        <div className="spinner" aria-label="Loading" />
+        <div className="loading-center">
+          <Loader size={44} color="#646cff" label="Evaluating" />
+        </div>
       </div>
     </div>
   );

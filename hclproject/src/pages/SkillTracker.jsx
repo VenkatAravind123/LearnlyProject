@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { FiTrendingUp, FiCode, FiMessageSquare, FiZap, FiPlus, FiEdit2 } from "react-icons/fi";
 import './skilltracker.css'
+import Loader from "../components/Loader";
 
 import { useNavigate } from "react-router-dom";
 
@@ -266,7 +267,12 @@ const navigate = useNavigate();
         </select>
       </div>
 
-      {loading && <div className="muted">Loading…</div>}
+      {loading && (
+        <div className="loading-block">
+          <Loader size={34} color="#646cff" />
+          <div className="muted">Loading…</div>
+        </div>
+      )}
       {error && <div className="muted">{error}</div>}
 
       {!loading && !error && (

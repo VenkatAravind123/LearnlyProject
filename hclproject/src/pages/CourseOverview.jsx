@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import Loader from "../components/Loader";
 
 const API_BASE = "http://localhost:5000";
 
@@ -93,7 +94,14 @@ export default function CourseOverview() {
 
   return (
     <section>
-      {loading && <div className="muted">Loading…</div>}
+      {loading && (
+        <div className="loading-center" style={{ padding: "1rem 0" }}>
+          <div className="loading-inline">
+            <Loader size={22} color="#646cff" />
+            <div className="muted">Loading…</div>
+          </div>
+        </div>
+      )}
       {error && <div className="muted">{error}</div>}
 
       {!loading && course && (

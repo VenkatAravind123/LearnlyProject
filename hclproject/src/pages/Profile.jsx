@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import Loader from "../components/Loader";
 import { useNavigate } from "react-router-dom";
 import "./profile.css";
 import { IoCloseOutline } from "react-icons/io5";
@@ -179,7 +180,14 @@ export default function Profile({ user }) {
       </div>
 
       {error && <div className="ps-alert">Error: {error}</div>}
-      {loading && <div className="card ps-card">Loading profile…</div>}
+      {loading && (
+        <div className="card ps-card" style={{ textAlign: "center" }}>
+          <div className="loading-block" style={{ padding: 0 }}>
+            <Loader size={32} color="#646cff" />
+            <div className="muted">Loading profile…</div>
+          </div>
+        </div>
+      )}
 
       {!loading && (
         <>

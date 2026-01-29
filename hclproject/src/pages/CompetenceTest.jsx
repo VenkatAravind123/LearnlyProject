@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Loader from "../components/Loader";
 
 export default function CompetenceTest() {
   const [questions, setQuestions] = useState([]);
@@ -73,7 +74,12 @@ export default function CompetenceTest() {
         Time Left: {timeLeft}s
       </div>
       <form onSubmit={handleSubmit}>
-        {questions.length === 0 && <div>Loading questions...</div>}
+        {questions.length === 0 && (
+          <div className="loading-inline" style={{ padding: "0.75rem 0" }}>
+            <Loader size={20} color="#646cff" />
+            <div className="muted">Loading questions…</div>
+          </div>
+        )}
         {questions.map((q, idx) => (
           <div key={q.id} className="competence-question">
             <div>

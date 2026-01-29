@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import "./App.css";
 import Sidebar from "./components/Sidebar";
 import Header from "./components/Header";
+import Loader from "./components/Loader";
 import Dashboard from "./pages/Dashboard";
 import AdminDashboard from "./pages/AdminDashboard";
 import Courses from "./pages/Courses";
@@ -90,7 +91,16 @@ export default function App() {
       <Navigate to="/login" replace />
     );
 
-  if (loading) return null; // Optionally show a spinner
+  if (loading) {
+    return (
+      <div className="loading-center" style={{ minHeight: "100vh" }}>
+        <div className="loading-block">
+          <Loader size={44} color="#646cff" />
+          <div className="muted">Loading…</div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <Router>

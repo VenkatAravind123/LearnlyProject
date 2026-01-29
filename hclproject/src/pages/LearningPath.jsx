@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Loader from "../components/Loader";
 
 const API_BASE = "http://localhost:5000";
 
@@ -222,7 +223,10 @@ export default function LearningPath() {
 
       {loading && (
         <div className="card" style={{ textAlign: "center", padding: "2rem" }}>
-          <div className="muted">Loading…</div>
+          <div className="loading-block" style={{ padding: 0 }}>
+            <Loader size={34} color="#646cff" />
+            <div className="muted">Loading…</div>
+          </div>
         </div>
       )}
 

@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import Loader from "../components/Loader";
 
 const API_BASE = "http://localhost:5000";
 
@@ -298,7 +299,10 @@ Return concise output.
   if (loading) {
     return (
       <div className="card" style={{ textAlign: "center", padding: "3rem" }}>
-        <div className="muted">Loading…</div>
+        <div className="loading-block" style={{ padding: 0 }}>
+          <Loader size={40} color="#646cff" />
+          <div className="muted">Loading…</div>
+        </div>
       </div>
     );
   }
@@ -440,7 +444,6 @@ Return concise output.
               background: "rgba(100,108,255,0.2)",
               padding: "0.35rem 0.85rem",
               borderRadius: "6px",
-              marginRight: "0.5rem",
             }}
           >
             Unit {unit?.order}: {unit?.title}
@@ -787,7 +790,7 @@ Return concise output.
           style={{
             position: "fixed",
             inset: 0,
-            background: "rgba(0,0,0,0.55)",
+            background: "var(--bg)",
             zIndex: 10000,
             display: "flex",
             alignItems: "center",

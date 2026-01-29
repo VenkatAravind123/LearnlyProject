@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import Loader from "../components/Loader";
 
 const API_BASE = "http://localhost:5000";
 
@@ -56,7 +57,14 @@ export default function Users({ search }) {
         <p className="muted">All registered users.</p>
       </div>
 
-      {loading && <div className="muted">Loading users…</div>}
+      {loading && (
+        <div className="loading-center" style={{ padding: "1rem 0" }}>
+          <div className="loading-inline">
+            <Loader size={20} color="#646cff" />
+            <div className="muted">Loading users…</div>
+          </div>
+        </div>
+      )}
       {error && <div className="muted">{error}</div>}
 
       {!loading && !error && (

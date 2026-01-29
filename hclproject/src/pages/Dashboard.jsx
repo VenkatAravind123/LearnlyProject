@@ -105,8 +105,11 @@ export default function Dashboard({ user }) {
       </div>
 
       {loading && (
-        <div className="muted">
-          <Loader />
+        <div className="loading-center" style={{ padding: "1rem 0" }}>
+          <div className="loading-inline">
+            <Loader size={26} color="#646cff" />
+            <div className="muted">Loading…</div>
+          </div>
         </div>
       )}
       {error && <div className="muted">{error}</div>}

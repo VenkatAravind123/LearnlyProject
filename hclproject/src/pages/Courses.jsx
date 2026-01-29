@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Loader from "../components/Loader";
 import { FiBookOpen, FiUsers, FiTrendingUp, FiCheckCircle, FiSearch, FiClock, FiTarget } from "react-icons/fi";
 
 const API_BASE = "http://localhost:5000";
@@ -335,7 +336,10 @@ export default function Courses({ search, userRole }) {
 
       {loading && (
         <div className="card" style={{ textAlign: "center", padding: "2rem" }}>
-          <div className="muted">Loading courses…</div>
+          <div className="loading-block" style={{ padding: 0 }}>
+            <Loader size={34} color="#646cff" />
+            <div className="muted">Loading courses…</div>
+          </div>
         </div>
       )}
 
@@ -879,7 +883,14 @@ export default function Courses({ search, userRole }) {
                     color: "#fff",
                   }}
                 >
-                  {enrollmentsLoading && selectedCourse?.courseId === c.courseId ? "Loading..." : "View Students"}
+                  {enrollmentsLoading && selectedCourse?.courseId === c.courseId ? (
+                    <span className="loading-inline" style={{ justifyContent: "center" }}>
+                      <Loader size={16} color="#fff" />
+                      Loading…
+                    </span>
+                  ) : (
+                    "View Students"
+                  )}
                 </button>
               ) : (
                 <button
@@ -985,7 +996,14 @@ export default function Courses({ search, userRole }) {
                     color: "#fff",
                   }}
                 >
-                  {enrollmentsLoading && selectedCourse?.courseId === c.courseId ? "Loading..." : "View Students"}
+                  {enrollmentsLoading && selectedCourse?.courseId === c.courseId ? (
+                    <span className="loading-inline" style={{ justifyContent: "center" }}>
+                      <Loader size={16} color="#fff" />
+                      Loading…
+                    </span>
+                  ) : (
+                    "View Students"
+                  )}
                 </button>
               </div>
             </article>
@@ -1121,7 +1139,7 @@ export default function Courses({ search, userRole }) {
                       //   onClick={() => startCourse(c)}
                       //   disabled={busyId === c.courseId}
                       // >
-                      <button onClick={() => navigate(`/courses/${c.courseId}/overview`)}>
+                      <button type="button" className="btn-primary" onClick={() => navigate(`/courses/${c.courseId}/overview`)}>
                         {busyId === c.courseId ? "Enrolling..." : "Enroll Now"}
                       </button>
                     )}
@@ -1190,7 +1208,14 @@ export default function Courses({ search, userRole }) {
             </div>
           )}
 
-          {enrollmentsLoading && <div className="muted" style={{ textAlign: "center", padding: "1rem" }}>Loading enrollments…</div>}
+          {enrollmentsLoading && (
+            <div className="loading-center" style={{ padding: "1rem" }}>
+              <div className="loading-inline">
+                <Loader size={22} color="#646cff" />
+                <div className="muted">Loading enrollments…</div>
+              </div>
+            </div>
+          )}
 
           {!enrollmentsLoading && enrolledStudents.length === 0 && (
             <div className="muted" style={{ textAlign: "center", padding: "2rem" }}>

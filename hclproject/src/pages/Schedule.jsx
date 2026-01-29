@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
+import Loader from "../components/Loader";
 
 const API_BASE = "http://localhost:5000";
 
@@ -170,7 +171,14 @@ setNextTask(data.nextTask || null);
         </div>
       </div>
 
-      {loading && <div className="muted">Loading…</div>}
+      {loading && (
+        <div className="loading-center" style={{ padding: "1rem 0" }}>
+          <div className="loading-inline">
+            <Loader size={22} color="#646cff" />
+            <div className="muted">Loading…</div>
+          </div>
+        </div>
+      )}
       {error && <div className="muted">{error}</div>}
 
       {!loading && !plan && (

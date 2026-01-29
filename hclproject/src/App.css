@@ -2706,9 +2706,12 @@
   background: linear-gradient(135deg, #646cff, #61dafb);
 }
 
-.course-card-v2__footer {
-  padding: 1rem;
-  border-top: 1px solid var(--border);
+.course-card-v2__footer { display: flex; }
+.course-card-v2__footer .btn-primary { width: 100%; justify-content: center; }
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(100, 108, 255, 0.3);
 }
 
 .btn-primary {
