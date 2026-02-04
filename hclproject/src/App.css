@@ -597,6 +597,7 @@
   font-size: 1.8rem;
 }
 
+
 .landing-nav-links {
   display: flex;
   align-items: center;
@@ -2740,4 +2741,28 @@
   .courses-toolbar {
     grid-template-columns: 1fr;
   }
+}
+
+/* Mini Study Assistant */
+.mini-assistant-input {
+  width: 100%;
+  padding: 0.85rem 0.95rem;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--input-bg);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.95rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.mini-assistant-input::placeholder {
+  color: var(--muted);
+}
+
+.mini-assistant-input:focus {
+  outline: none;
+  border-color: rgba(100, 108, 255, 0.5);
+  background: var(--input-bg-focus);
+  box-shadow: 0 0 0 4px rgba(100, 108, 255, 0.14);
 }

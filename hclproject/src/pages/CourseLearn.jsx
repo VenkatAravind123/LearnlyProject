@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Loader from "../components/Loader";
+import { SiGoogleassistant } from "react-icons/si";
 
 const API_BASE = "http://localhost:5000";
 
@@ -39,6 +40,95 @@ export default function CourseLearn() {
   const [aiLoading, setAiLoading] = useState(false);
   const [aiAnswer, setAiAnswer] = useState(null);
 
+    // Mini Study Assistant (chat widget)
+  const [assistantOpen, setAssistantOpen] = useState(false);
+  const [assistantMessages, setAssistantMessages] = useState([]); // [{ role: "user"|"assistant", content: string }]
+  const [assistantPrompt, setAssistantPrompt] = useState("");
+  const [assistantUseSelection, setAssistantUseSelection] = useState(true);
+  const [assistantSending, setAssistantSending] = useState(false);
+  const [assistantError, setAssistantError] = useState("");
+
+
+
+    function openAssistantWithSelection(defaultPrompt = "") {
+    setAssistantOpen(true);
+    setAssistantError("");
+    if (defaultPrompt) setAssistantPrompt(defaultPrompt);
+    // If user already selected something, default to using it
+    if (selectedText) setAssistantUseSelection(true);
+  }
+
+  function closeAssistant() {
+    setAssistantOpen(false);
+    setAssistantError("");
+    setAssistantSending(false);
+    setAssistantPrompt("");
+  }
+
+  function extractAssistantText(data) {
+    return (
+      data?.simplifiedExplanation ||
+      data?.answer ||
+      data?.response ||
+      data?.message ||
+      (typeof data === "string" ? data : JSON.stringify(data, null, 2))
+    );
+  }
+
+  async function sendAssistantMessage() {
+    const userPrompt = String(assistantPrompt || "").trim();
+    if (!userPrompt) return;
+
+    setAssistantSending(true);
+    setAssistantError("");
+
+    const contextCourse = course?.courseName || "";
+    const contextUnit = unit?.title ? `Unit: ${unit.title}` : "";
+
+    const selectionBlock =
+      assistantUseSelection && selectedText
+        ? `Selected text: "${selectedText}"`
+        : "Selected text: (not provided)";
+
+    const message = `
+You are a helpful study assistant.
+Follow the student's instruction exactly about style/length.
+
+Course: ${contextCourse}
+${contextUnit}
+
+${selectionBlock}
+
+Student request: ${userPrompt}
+
+Return a clear, helpful answer.
+`.trim();
+
+    const newUserMsg = { role: "user", content: userPrompt };
+    setAssistantMessages((prev) => [...prev, newUserMsg]);
+
+    try {
+      const fd = new FormData();
+      fd.append("message", message);
+
+      const res = await fetch(`${API_BASE}/api/assistant/chat`, {
+        method: "POST",
+        credentials: "include",
+        body: fd,
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.error || "Assistant request failed");
+
+      const assistantText = extractAssistantText(data);
+      setAssistantMessages((prev) => [...prev, { role: "assistant", content: assistantText }]);
+      setAssistantPrompt("");
+    } catch (e) {
+      setAssistantError(e?.message || "Failed to ask assistant");
+    } finally {
+      setAssistantSending(false);
+    }
+  }
   function closeAsk() {
     setAskOpen(false);
     setAiLoading(false);
@@ -507,31 +597,58 @@ Return concise output.
         >
           {explanationText || "No explanation returned."}
         </div>
-                {selectionPos && selectedText && !askOpen && (
-          <button
-            type="button"
-            onClick={() => {
-              setAskMode("meaning");
-              setAskOpen(true);
-            }}
-            style={{
-              position: "fixed",
-              left: `${selectionPos.x}px`,
-              top: `${selectionPos.y}px`,
-              transform: "translate(-50%, -100%)",
-              zIndex: 9999,
-              padding: "0.4rem 0.65rem",
-              borderRadius: "999px",
-              border: "1px solid rgba(255,255,255,0.15)",
-              background: "#000",
-              color: "white",
-              fontWeight: 600,
-              cursor: "pointer",
-            }}
-          >
-            Ask AI
-          </button>
-        )}
+            {selectionPos && selectedText && !askOpen && (
+  <div
+    style={{
+      position: "fixed",
+      left: `${selectionPos.x}px`,
+      top: `${selectionPos.y}px`,
+      transform: "translate(-50%, -100%)",
+      zIndex: 9999,
+      display: "flex",
+      gap: "0.5rem",
+      padding: "0.35rem",
+      borderRadius: "999px",
+      border: "1px solid rgba(255,255,255,0.15)",
+      background: "#000",
+    }}
+  >
+    <button
+      type="button"
+      onClick={() => {
+        setAskMode("meaning");
+        setAskOpen(true);
+      }}
+      style={{
+        padding: "0.4rem 0.7rem",
+        borderRadius: "999px",
+        border: "1px solid rgba(255,255,255,0.12)",
+        background: "transparent",
+        color: "white",
+        fontWeight: 700,
+        cursor: "pointer",
+      }}
+    >
+      Ask AI
+    </button>
+
+    <button
+      type="button"
+      onClick={() => openAssistantWithSelection('Explain this in my style: "')}
+      style={{
+        padding: "0.4rem 0.7rem",
+        borderRadius: "999px",
+        border: "1px solid rgba(255,255,255,0.12)",
+        background: "rgba(255,255,255,0.08)",
+        color: "white",
+        fontWeight: 700,
+        cursor: "pointer",
+      }}
+    >
+      Assistant
+    </button>
+  </div>
+)}
       </div>
 
       <div
@@ -854,6 +971,173 @@ Return concise output.
           </div>
         </div>
       )}
+      {/* Mini Study Assistant floating button */}
+<button
+  type="button"
+  onClick={() => setAssistantOpen(true)}
+  style={{
+    position: "fixed",
+    right: 18,
+    bottom: 18,
+    zIndex: 9998,
+    padding: "0.75rem 1rem",
+    borderRadius: "999px",
+    border: "1px solid var(--border)",
+    background: "var(--surface)",
+    color: "var(--text)",
+    boxShadow: "0 10px 30px var(--shadow)",
+    fontWeight: 800,
+    cursor: "pointer",
+  }}
+>
+  <SiGoogleassistant />
+</button>
+
+{/* Mini Study Assistant panel */}
+{assistantOpen && (
+  <div
+    style={{
+      position: "fixed",
+      right: 18,
+      bottom: 70,
+      zIndex: 9999,
+      width: "min(420px, calc(100vw - 36px))",
+      maxHeight: "70vh",
+      borderRadius: 16,
+      border: "1px solid var(--border)",
+      background: "var(--surface)",
+      boxShadow: "0 20px 60px var(--shadow)",
+      overflow: "hidden",
+      display: "flex",
+      flexDirection: "column",
+    }}
+  >
+    <div
+      style={{
+        padding: "0.85rem 1rem",
+        borderBottom: "1px solid var(--border)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        gap: "0.75rem",
+      }}
+    >
+      <div style={{ fontWeight: 900 }}>Mini Study Assistant</div>
+      <button className="ghost" onClick={closeAssistant}>
+        Close
+      </button>
+    </div>
+
+    <div style={{ padding: "0.75rem 1rem", borderBottom: "1px solid var(--border)" }}>
+      <label style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+        <input
+          type="checkbox"
+          checked={assistantUseSelection}
+          onChange={(e) => setAssistantUseSelection(e.target.checked)}
+        />
+        <span className="muted small">
+          Use selected explanation text {selectedText ? "(selected)" : "(none selected)"}
+        </span>
+      </label>
+
+      <div className="actions" style={{ marginTop: "0.5rem", flexWrap: "wrap" }}>
+        <button
+          type="button"
+          className="ghost"
+          onClick={() => setAssistantPrompt("Explain in very simple words.")}
+        >
+          Explain simply
+        </button>
+        <button
+          type="button"
+          className="ghost"
+          onClick={() => setAssistantPrompt("Give 2 examples and 2 analogies.")}
+        >
+          Examples
+        </button>
+        <button
+          type="button"
+          className="ghost"
+          onClick={() => setAssistantPrompt("Summarize in 3 bullets.")}
+        >
+          Summarize
+        </button>
+        <button
+          type="button"
+          className="ghost"
+          onClick={() => setAssistantPrompt("Ask me 3 quiz questions about this.")}
+        >
+          Quiz me
+        </button>
+      </div>
+
+      {assistantError && (
+        <div className="alert alert-error" style={{ marginTop: "0.75rem" }}>
+          {assistantError}
+        </div>
+      )}
+    </div>
+
+    <div
+      style={{
+        padding: "0.75rem 1rem",
+        overflow: "auto",
+        display: "flex",
+        flexDirection: "column",
+        gap: "0.6rem",
+        flex: 1,
+      }}
+    >
+      {assistantMessages.length === 0 ? (
+        <div className="muted small">
+          Tip: select part of the explanation, then ask: “Explain like I’m 10”, “Give code example”, etc.
+        </div>
+      ) : (
+        assistantMessages.map((m, i) => (
+          <div
+            key={i}
+            style={{
+              alignSelf: m.role === "user" ? "flex-end" : "flex-start",
+              maxWidth: "90%",
+              padding: "0.65rem 0.8rem",
+              borderRadius: 12,
+              border: "1px solid var(--border)",
+              background: m.role === "user" ? "rgba(100,108,255,0.12)" : "var(--surface-2)",
+              whiteSpace: "pre-wrap",
+              lineHeight: 1.5,
+            }}
+          >
+            {m.content}
+          </div>
+        ))
+      )}
+    </div>
+
+    <div style={{ padding: "0.75rem 1rem", borderTop: "1px solid var(--border)" }}>
+      <input
+  className="mini-assistant-input"
+  value={assistantPrompt}
+  onChange={(e) => setAssistantPrompt(e.target.value)}
+  placeholder='Type your wish… e.g. "Explain in very easy English"'
+  onKeyDown={(e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      if (!assistantSending) sendAssistantMessage();
+    }
+  }}
+/>
+
+      <div className="actions">
+        <button className="btn-primary" onClick={sendAssistantMessage} disabled={assistantSending}>
+          {assistantSending ? "Sending..." : "Send"}
+        </button>
+        <button className="ghost" onClick={() => setAssistantMessages([])} disabled={assistantSending}>
+          Clear
+        </button>
+      </div>
+    </div>
+  </div>
+)}
     </section>
   );
 }

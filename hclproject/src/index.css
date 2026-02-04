@@ -106,7 +106,7 @@ button:focus-visible {
 button:active { transform: scale(0.98); }
 
 /* Let pages inherit the single global background */
-.auth-page, .app-root { background: transparent; }
+/* .auth-page, .app-root { background: transparent; } */
 
 /* Loading helpers */
 .loading-inline {
