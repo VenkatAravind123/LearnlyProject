@@ -30,3 +30,24 @@ Start the react app using-
 ```
 npm run dev
 ```
+
+## AI (Ollama) Setup (Required)
+This project uses Ollama for AI features (assistant, summaries, quizzes, study plan generation).
+
+1) Install Ollama: https://ollama.com  
+2) Make sure Ollama is running (Windows/Mac usually runs as a service)
+3) Pull the model configured in backend env:
+
+- Check backend/.env:
+  - OLLAMA_BASE_URL=http://127.0.0.1:11434
+  - OLLAMA_MODEL=...
+
+Then run:
+ollama pull <YOUR_MODEL_NAME>
+
+Example (lighter model recommended):
+ollama pull llama3.2:3b
+
+Verify:
+ollama list
+curl http://127.0.0.1:11434/api/tags
